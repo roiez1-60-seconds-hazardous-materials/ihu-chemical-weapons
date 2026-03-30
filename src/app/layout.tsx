@@ -2,8 +2,8 @@ import './globals.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'IHU Intelligence Report | דו"ח מודיעיני',
-  description: 'Anatomy of a Threat: The IRGC Pharmaceutical Weapon Program',
+  title: 'מעבדות הנשק הכימי של משמרות המהפכה | דו"ח מודיעיני',
+  description: 'Anatomy of a Threat: The IRGC Chemical Weapons Laboratories at Imam Hossein University',
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },

@@ -11,7 +11,7 @@ interface LangCtx {
 }
 
 const dict: Record<string, Record<Lang, string>> = {
-  'nav.title': { he: 'דו"ח מודיעיני | IHU', en: 'Intelligence Report | IHU' },
+  'nav.title': { he: 'דו"ח מודיעיני | מעבדות הנשק הכימי', en: 'Intelligence Report | IRGC Chemical Weapons Labs' },
   'nav.home': { he: 'בית', en: 'Home' },
   'nav.timeline': { he: 'ציר זמן', en: 'Timeline' },
   'nav.paradigm': { he: 'פרדיגמה', en: 'Paradigm' },
@@ -25,7 +25,7 @@ const dict: Record<string, Record<Lang, string>> = {
   'nav.lang': { he: 'EN', en: 'עב' },
   'hero.classified': { he: '[ לא מסווג ]', en: '[ UNCLASSIFIED ]' },
   'hero.title': { he: 'אנטומיה של איום', en: 'Anatomy of a Threat' },
-  'hero.subtitle': { he: 'מעבדת הנשק של משמרות המהפכה', en: "The IRGC's Weapons Laboratory" },
+  'hero.subtitle': { he: 'מעבדות הנשק הכימי של משמרות המהפכה', en: "The IRGC's Chemical Weapons Laboratories" },
   'hero.desc': { he: 'חשיפת תוכנית הלוחמה הכימית (PBAs) באוניברסיטת אל-אימאם חוסיין בטהראן', en: "Exposing Iran's Pharmaceutical-Based Chemical Warfare Program at Imam Hossein University, Tehran" },
   'hero.date': { he: 'מרץ 2026', en: 'March 2026' },
   'hero.cta': { he: 'לדו"ח המלא ↓', en: 'Full Report ↓' },
@@ -34,7 +34,7 @@ const dict: Record<string, Record<Lang, string>> = {
   'summary.p2': { he: 'תוכנית ה-PBA מסמלת מעבר מנשק השמדה המונית לנשק שיתוק טקטי — כלים המיועדים לשימוש יומיומי במלחמות פרוקסי באזור האפור.', en: "Iran's PBA program represents a paradigm shift from WMDs to tactical incapacitation weapons — tools designed for everyday use in proxy wars in the gray zone." },
   'summary.p3': { he: 'המחקר שולב ישירות בשרשרת הייצור הצבאית של SPND וסופק לארגוני פרוקסי כולל חיזבאללה.', en: 'Research was integrated directly into SPND\'s military production chain and supplied to proxy organizations including Hezbollah.' },
   'campus.title': { he: 'קמפוס אקדמי או בסיס צבאי?', en: 'Academic Campus or Military Base?' },
-  'campus.subtitle': { he: 'קומפלקס המו"פ המרכזי של איראן ללוחמה אסימטרית', en: "Iran's central R&D complex for asymmetric warfare" },
+  'campus.subtitle': { he: 'מרכז המחקר והפיתוח של משמרות המהפכה ללוחמה אסימטרית', en: "The IRGC's central R&D complex for asymmetric warfare" },
   'campus.facade': { he: 'חזות אזרחית', en: 'Civilian Facade' },
   'campus.reality': { he: 'שליטת משמרות המהפכה', en: 'IRGC Control' },
   'paradigm.title': { he: 'שינוי פרדיגמה: נשק כימי באזור האפור', en: 'Paradigm Shift: Chemical Weapons in the Gray Zone' },
