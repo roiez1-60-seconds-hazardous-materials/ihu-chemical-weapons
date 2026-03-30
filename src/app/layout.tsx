@@ -4,6 +4,14 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'IHU Intelligence Report | דו"ח מודיעיני',
   description: 'Anatomy of a Threat: The IRGC Pharmaceutical Weapon Program',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
