@@ -37,7 +37,7 @@ export default function Chain() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.2, type: 'spring' }}
-                whileHover={{ scale: 1.08, y: -8 }}
+                whileHover={{ scale: 1.02, y: -3 }}
                 className={`p-5 rounded-2xl border ${c.border} ${c.bg} backdrop-blur-sm w-full shadow-lg ${c.glow} text-center`}
               >
                 <motion.div

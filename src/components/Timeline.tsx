@@ -46,7 +46,7 @@ export default function Timeline() {
               className={`relative flex items-center mb-12 ${isLeft ? 'flex-row' : 'flex-row-reverse'}`}
             >
               <div className={`w-5/12 ${isLeft ? 'text-left pr-8' : 'text-right pl-8'}`}>
-                <motion.div whileHover={{ scale: 1.03, y: -3 }} className={`p-4 rounded-xl border ${ev.colorClass} backdrop-blur-sm`}>
+                <motion.div whileHover={{ scale: 1.01 }} transition={{ duration: 0.2 }} className={`p-4 rounded-xl border ${ev.colorClass} backdrop-blur-sm`}>
                   <div className="font-mono text-2xl font-black mb-1">{ev.year}</div>
                   <div className="font-bold text-sm mb-1">{data.label}</div>
                   <div className="text-xs text-gray-400 leading-relaxed">{data.desc}</div>

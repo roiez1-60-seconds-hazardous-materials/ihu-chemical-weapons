@@ -1,16 +1,21 @@
 'use client';
 import { motion } from 'framer-motion';
-import { Crosshair, MapPin } from 'lucide-react';
+import { Crosshair, MapPin, ExternalLink } from 'lucide-react';
 import { useLang } from '@/lib/LanguageContext';
 
+const IHU_LAT = 35.7456;
+const IHU_LNG = 51.4890;
+const GOOGLE_MAPS_URL = `https://www.google.com/maps/place/Imam+Hossein+University/@${IHU_LAT},${IHU_LNG},16z`;
+
 const targets = [
-  { id: '01', x: '68%', y: '28%', color: '#ef4444', he: { name: 'המרכז לכימיה', desc: 'מוקד פיתוח וסינתזת נשק כימי מבוסס תרופות' }, en: { name: 'Chemistry Center', desc: 'PBA development and synthesis hub' } },
-  { id: '02', x: '25%', y: '45%', color: '#f59e0b', he: { name: 'מנהרות הרוח', desc: 'תשתית לפיתוח ובחינת מערכות פיזור אירוסוליות' }, en: { name: 'Wind Tunnels', desc: 'Aerosol dispersal system testing infrastructure' } },
-  { id: '03', x: '50%', y: '72%', color: '#8b5cf6', he: { name: 'מרכז טכנולוגיה והנדסה', desc: 'שילוב מטענים כימיים עם פלטפורמות מכניות' }, en: { name: 'Tech & Engineering Center', desc: 'Integration of chemical payloads with platforms' } },
+  { id: '01', color: '#ef4444', he: { name: 'המרכז לכימיה', desc: 'מוקד פיתוח וסינתזת נשק כימי מבוסס תרופות' }, en: { name: 'Chemistry Center', desc: 'PBA development and synthesis hub' } },
+  { id: '02', color: '#f59e0b', he: { name: 'מנהרות הרוח', desc: 'תשתית לפיתוח ובחינת מערכות פיזור אירוסוליות' }, en: { name: 'Wind Tunnels', desc: 'Aerosol dispersal system testing infrastructure' } },
+  { id: '03', color: '#8b5cf6', he: { name: 'מרכז טכנולוגיה והנדסה', desc: 'שילוב מטענים כימיים עם פלטפורמות מכניות' }, en: { name: 'Tech & Engineering Center', desc: 'Integration of chemical payloads with platforms' } },
 ];
 
 export default function Strikes() {
   const { t, lang } = useLang();
+  const isHe = lang === 'he';
   return (
     <section id="response" className="py-20 px-4 max-w-6xl mx-auto">
       <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-center mb-12">
@@ -18,105 +23,78 @@ export default function Strikes() {
         <p className="text-gray-400">{t('strikes.subtitle')}</p>
       </motion.div>
 
-      {/* Campus map with targets */}
+      {/* Real satellite map embed */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
-        className="relative rounded-2xl border border-gray-700/40 bg-gray-900/50 backdrop-blur-sm overflow-hidden mx-auto max-w-3xl"
-        style={{ aspectRatio: '16/10' }}
+        transition={{ duration: 0.6 }}
+        className="relative rounded-2xl border border-gray-700/40 overflow-hidden mx-auto max-w-3xl"
       >
-        {/* Grid overlay */}
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'linear-gradient(rgba(59,130,246,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.05) 1px, transparent 1px)',
-          backgroundSize: '30px 30px',
-        }} />
-
-        {/* Night vision overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-green-900/5 to-transparent" />
-
-        {/* Scan line */}
-        <motion.div
-          className="absolute left-0 right-0 h-[1px]"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(0,255,0,0.2), transparent)' }}
-          animate={{ top: ['0%', '100%'] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-        />
-
-        {/* Campus label */}
-        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 font-mono text-[10px] text-green-500/60">
-          35.7456°N, 51.4890°E — IHU CAMPUS
-        </div>
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
-          <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ duration: 1.5, repeat: Infinity }} className="font-mono text-[10px] text-red-500">
-            ● LIVE
-          </motion.span>
-        </div>
-
-        {/* Building blocks */}
-        {[
-          { x: '15%', y: '20%', w: 60, h: 30 },
-          { x: '35%', y: '15%', w: 80, h: 35 },
-          { x: '60%', y: '20%', w: 70, h: 40 },
-          { x: '20%', y: '45%', w: 50, h: 50 },
-          { x: '45%', y: '40%', w: 90, h: 30 },
-          { x: '70%', y: '45%', w: 60, h: 35 },
-          { x: '30%', y: '65%', w: 70, h: 30 },
-          { x: '55%', y: '68%', w: 80, h: 35 },
-          { x: '75%', y: '70%', w: 50, h: 25 },
-        ].map((b, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5 + i * 0.05 }}
-            className="absolute bg-gray-700/30 border border-gray-600/20 rounded-sm"
-            style={{ left: b.x, top: b.y, width: b.w, height: b.h }}
+        {/* Google Maps Embed - satellite view of IHU */}
+        <div className="relative" style={{ paddingBottom: '56.25%' }}>
+          <iframe
+            src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3238.5!2d${IHU_LNG}!3d${IHU_LAT}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f8e02d0d3e4c2b1%3A0x5f1e8d9a8c5b6a7!2sImam+Hossein+University!5e1!3m2!1sen!2s!4v1`}
+            className="absolute inset-0 w-full h-full"
+            style={{ border: 0, filter: 'saturate(0.7) contrast(1.1)' }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
           />
-        ))}
+          {/* Overlay with coordinates */}
+          <div className="absolute top-3 left-3 z-10 bg-black/70 backdrop-blur-sm rounded-lg px-3 py-1.5 border border-gray-600/30">
+            <div className="font-mono text-[10px] text-green-400">
+              {IHU_LAT}°N, {IHU_LNG}°E
+            </div>
+            <div className="font-mono text-[9px] text-gray-500">
+              Imam Hossein University, Tehran
+            </div>
+          </div>
+          <div className="absolute top-3 right-3 z-10">
+            <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }} className="font-mono text-[10px] text-red-500 bg-black/70 px-2 py-1 rounded">
+              ● LIVE
+            </motion.span>
+          </div>
+        </div>
 
-        {/* Target crosshairs */}
-        {targets.map((tgt, i) => (
-          <motion.div
-            key={tgt.id}
-            initial={{ opacity: 0, scale: 3 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 1.5 + i * 0.4, type: 'spring', stiffness: 150 }}
-            className="absolute z-10 flex flex-col items-center"
-            style={{ left: tgt.x, top: tgt.y, transform: 'translate(-50%, -50%)' }}
-          >
-            <motion.div
-              animate={{ scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
-            >
-              <Crosshair size={32} style={{ color: tgt.color }} />
-            </motion.div>
-          </motion.div>
-        ))}
+        {/* Link to Google Maps */}
+        <a
+          href={GOOGLE_MAPS_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 py-3 bg-gray-800/80 border-t border-gray-700/30 hover:bg-gray-700/50 transition-colors"
+        >
+          <MapPin size={14} className="text-blue-400" />
+          <span className="text-xs text-blue-400 font-semibold">
+            {isHe ? 'פתח ב-Google Maps' : 'Open in Google Maps'}
+          </span>
+          <ExternalLink size={12} className="text-blue-400" />
+        </a>
       </motion.div>
 
       {/* Target legend cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 max-w-3xl mx-auto">
         {targets.map((tgt, i) => {
-          const d = lang === 'he' ? tgt.he : tgt.en;
+          const d = isHe ? tgt.he : tgt.en;
           return (
             <motion.div
               key={tgt.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 2.5 + i * 0.2 }}
-              whileHover={{ scale: 1.05 }}
+              transition={{ delay: 0.3 + i * 0.15 }}
+              whileHover={{ scale: 1.02 }}
               className="p-4 rounded-xl border border-gray-700/30 bg-gray-900/30 backdrop-blur-sm"
             >
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-mono font-bold text-white" style={{ backgroundColor: tgt.color }}>
-                  {tgt.id}
+                <div className="flex items-center gap-1.5">
+                  <Crosshair size={16} style={{ color: tgt.color }} />
+                  <span className="text-[10px] font-mono font-bold text-white px-1.5 py-0.5 rounded" style={{ backgroundColor: tgt.color + '30', border: `1px solid ${tgt.color}50` }}>
+                    TARGET {tgt.id}
+                  </span>
                 </div>
-                <span className="text-sm font-bold text-gray-200">{d.name}</span>
               </div>
+              <h4 className="text-sm font-bold text-gray-200 mb-1">{d.name}</h4>
               <p className="text-[11px] text-gray-500 leading-relaxed">{d.desc}</p>
             </motion.div>
           );

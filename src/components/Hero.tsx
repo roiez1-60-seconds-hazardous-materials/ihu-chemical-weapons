@@ -171,7 +171,8 @@ function StatCounter({ value, suffix, label, color }: { value: number; suffix?: 
 
   return (
     <motion.div
-      whileHover={{ scale: 1.1, y: -5 }}
+      whileHover={{ scale: 1.03, y: -2 }}
+      transition={{ duration: 0.3 }}
       className={`flex flex-col items-center px-4 py-3 rounded-xl border ${colors[color]}`}
     >
       <motion.span

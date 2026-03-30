@@ -35,7 +35,7 @@ export default function Platforms() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.2 }}
-              whileHover={{ scale: 1.03, y: -8 }}
+              whileHover={{ scale: 1.01, y: -3 }}
               className={`rounded-2xl border ${c.border} ${c.bg} backdrop-blur-sm p-6 flex flex-col`}
             >
               <motion.div

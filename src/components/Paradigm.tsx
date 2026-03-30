@@ -38,7 +38,7 @@ export default function Paradigm() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.2 }}
-              whileHover={{ scale: 1.05, y: -5 }}
+              whileHover={{ scale: 1.02, y: -2 }}
               className={`p-5 rounded-xl border ${colors[p.color]} backdrop-blur-sm text-center`}
             >
               <div className={`text-xl font-black mb-2 ${textColors[p.color]}`}>{d.title}</div>
