@@ -4,7 +4,7 @@ import { Microscope, Shield, Factory, Crosshair } from 'lucide-react';
 import { useLang } from '@/lib/LanguageContext';
 
 const links = [
-  { icon: Microscope, color: 'blue', he: { title: 'IHU (מו"פ)', desc: 'פיתוח, סינתזה ומודלים טוקסיקולוגיים' }, en: { title: 'IHU (R&D)', desc: 'Development, synthesis & toxicological models' } },
+  { icon: Microscope, color: 'blue', he: { title: 'IHU (מו"פ)', desc: 'פיתוח וייצור חומרים כימיים, בדיקת רעילות' }, en: { title: 'IHU (R&D)', desc: 'Development, synthesis & toxicological models' } },
   { icon: Shield, color: 'purple', he: { title: 'SPND (פיקוח)', desc: 'תיאום פרויקטים רגישים ומימון' }, en: { title: 'SPND (Oversight)', desc: 'Coordination of sensitive projects & funding' } },
   { icon: Factory, color: 'amber', he: { title: 'שהיד מייסמי (ייצור)', desc: 'ייצור רימונים ומערכות פיזור — הושמד 2025' }, en: { title: 'Shahid Meisami (Mfg)', desc: 'Grenades & dispersal systems — destroyed 2025' } },
   { icon: Crosshair, color: 'red', he: { title: 'חיזבאללה / מיליציות', desc: 'היערכות טקטית — חטיפות ופשיטות גבול' }, en: { title: 'Hezbollah / Militias', desc: 'Tactical deployment — abductions & border raids' } },

@@ -12,7 +12,7 @@ const rows = [
 
 const pillars = [
   { he: { title: 'PBAs', desc: 'פנטניל ומדטומידין — קטלני מעל 2 מ"ג' }, en: { title: 'PBAs', desc: 'Fentanyl & medetomidine — lethal above 2mg' }, color: 'red' },
-  { he: { title: 'סוכני עצבים', desc: 'כולל נוביצ\'וק — ייצור בקנה מידה קטן' }, en: { title: 'Nerve Agents', desc: 'Including Novichok — small-scale production' }, color: 'purple' },
+  { he: { title: 'חומרי עצבים', desc: 'כולל נוביצ\'וק — ייצור בקנה מידה קטן' }, en: { title: 'Nerve Agents', desc: 'Including Novichok — small-scale production' }, color: 'purple' },
   { he: { title: 'RCAs', desc: 'רימוני "אשכן" — ללא הצהרה מלאה' }, en: { title: 'RCAs', desc: '"Ashkan" grenades — undeclared' }, color: 'amber' },
 ];
 
@@ -49,7 +49,8 @@ export default function Paradigm() {
       </div>
 
       {/* Comparison table */}
-      <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-xl border border-gray-700/50 overflow-hidden backdrop-blur-sm">
+      <div className="overflow-x-auto -mx-4 px-4">
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-xl border border-gray-700/50 overflow-hidden backdrop-blur-sm min-w-[480px]">
         {/* Header */}
         <div className="grid grid-cols-3 bg-gray-800/50">
           <div className="p-3 text-center text-xs text-gray-500 font-semibold">{lang === 'he' ? 'פרמטר' : 'Parameter'}</div>
@@ -84,6 +85,7 @@ export default function Paradigm() {
           );
         })}
       </motion.div>
+      </div>
     </section>
   );
 }

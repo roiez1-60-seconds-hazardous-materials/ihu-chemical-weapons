@@ -4,8 +4,8 @@ import { FlaskConical, Wind, Users, Skull } from 'lucide-react';
 import { useLang } from '@/lib/LanguageContext';
 
 const domains = [
-  { icon: FlaskConical, color: 'blue', he: { title: 'כימיה מבוססת תרופות', desc: 'סינתזה ופורמולציה של סוכנים משתקים וקטלניים' }, en: { title: 'Pharmaceutical Chemistry', desc: 'Synthesis & formulation of incapacitating and lethal agents' } },
-  { icon: Wind, color: 'amber', he: { title: 'הנדסת פיזור אזרחית', desc: 'אירוסוליזציה, מנהרות רוח, ומערכות משלוח' }, en: { title: 'Civilian Dispersal Engineering', desc: 'Aerosolization, wind tunnels & delivery systems' } },
+  { icon: FlaskConical, color: 'blue', he: { title: 'כימיה מבוססת תרופות', desc: 'ייצור ועיבוד של חומרים משתקים וקטלניים' }, en: { title: 'Pharmaceutical Chemistry', desc: 'Synthesis & formulation of incapacitating and lethal agents' } },
+  { icon: Wind, color: 'amber', he: { title: 'הנדסת פיזור אזרחית', desc: 'הפיכת חומרים לריסוס אווירי, מנהרות רוח ומערכות הפצה' }, en: { title: 'Civilian Dispersal Engineering', desc: 'Aerosolization, wind tunnels & delivery systems' } },
   { icon: Users, color: 'purple', he: { title: 'אסטרטגיית פרוקסי אסימטרית', desc: 'העברה לחיזבאללה ומיליציות לשימוש מבצעי' }, en: { title: 'Asymmetric Proxy Strategy', desc: 'Transfer to Hezbollah & militias for operational use' } },
 ];
 

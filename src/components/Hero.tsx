@@ -31,9 +31,9 @@ export default function Hero() {
         transition={{ delay: 0.3, duration: 0.5, type: 'spring', stiffness: 200 }}
         className="absolute top-28 sm:top-32 right-4 sm:right-12 z-10"
       >
-        <div className="border-4 border-red-600 px-4 py-2 rounded-sm">
-          <span className="text-red-600 font-mono font-black text-lg sm:text-2xl tracking-widest">
-            {lang === 'he' ? 'מסווג' : 'CLASSIFIED'}
+        <div className="border-4 border-green-600 px-4 py-2 rounded-sm">
+          <span className="text-green-600 font-mono font-black text-lg sm:text-2xl tracking-widest">
+            {lang === 'he' ? 'לא מסווג' : 'UNCLASSIFIED'}
           </span>
         </div>
       </motion.div>

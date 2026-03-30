@@ -14,6 +14,8 @@ import Gallery from '@/components/Gallery';
 import Sources from '@/components/Sources';
 import Insights from '@/components/Insights';
 
+import Footer from '@/components/Footer';
+
 export default function Home() {
   return (
     <LangProvider>
@@ -42,9 +44,7 @@ export default function Home() {
         <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto my-4" />
         <Insights />
         {/* Footer */}
-        <footer className="py-8 text-center border-t border-gray-800/50">
-          <p className="text-xs text-gray-600">60 שניות של חומ״ס | Intelligence Research Report | March 2026</p>
-        </footer>
+        <Footer />
       </main>
     </LangProvider>
   );

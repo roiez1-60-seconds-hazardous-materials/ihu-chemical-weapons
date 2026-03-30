@@ -39,7 +39,7 @@ export default function HazMat() {
           className="p-5 rounded-xl border border-amber-500/30 bg-amber-500/5 backdrop-blur-sm">
           <div className="flex items-center gap-2 mb-3">
             <Droplets className="text-amber-400" size={20} />
-            <h3 className="font-bold text-amber-400">{isHe ? 'סוכנים עיקריים' : 'Primary Agents'}</h3>
+            <h3 className="font-bold text-amber-400">{isHe ? 'חומרים עיקריים' : 'Primary Agents'}</h3>
           </div>
           <p className="text-xs text-gray-400 leading-relaxed">
             {isHe
@@ -57,9 +57,9 @@ export default function HazMat() {
           </div>
           <ul className="text-xs text-gray-400 space-y-1">
             <li>• {isHe ? 'רימוני יד ABC-M7A2/M7A3 ומחסניות 38mm' : 'ABC-M7A2/M7A3 grenades & 38mm cartridges'}</li>
-            <li>• {isHe ? 'מל"טי VTOL — מטען 7 ק"ג' : 'VTOL drones — 7 kg payload'}</li>
+            <li>• {isHe ? 'רחפנים (מל"טים) — נושאים מטען של 7 ק"ג' : 'Drones — 7 kg payload capacity'}</li>
             <li>• {isHe ? 'מערכות "מייצר ערפל" על משאיות' : 'Vehicle-mounted Fog Generators'}</li>
-            <li>• {isHe ? 'החדרה למערכות אוורור — עקיפת מיגון סטנדרטי' : 'HVAC penetration — bypassing standard protection'}</li>
+            <li>• {isHe ? 'הזרקה למזגנים ומערכות אוורור — עוקפת מסכות ומיגון רגיל' : 'Injection into HVAC systems — bypasses masks and standard protection'}</li>
           </ul>
         </motion.div>
 
@@ -68,11 +68,11 @@ export default function HazMat() {
           className="p-5 rounded-xl border border-purple-500/30 bg-purple-500/5 backdrop-blur-sm">
           <div className="flex items-center gap-2 mb-3">
             <Radio className="text-purple-400" size={20} />
-            <h3 className="font-bold text-purple-400">{isHe ? 'אירוסוליזציה' : 'Aerosolization'}</h3>
+            <h3 className="font-bold text-purple-400">{isHe ? 'הפצה באוויר (ריסוס)' : 'Aerosolization'}</h3>
           </div>
           <p className="text-xs text-gray-400 leading-relaxed">
             {isHe
-              ? 'חלקיקים 1-5 מיקרומטר — חדירה לדרכי נשימה תחתונות. דחפים: פרופאן, HFC134a. ממס: אתנול. מנהרות רוח בקמפוס שימשו לפיתוח.'
+              ? 'חלקיקים זעירים (1-5 מיקרון) שחודרים לריאות. החומר מרוסס באמצעות גז דחף (פרופאן או HFC134a) מעורבב באתנול. מנהרות רוח בקמפוס IHU שימשו לפיתוח טכנולוגיה זו.'
               : 'Particles 1-5 μm — lower respiratory penetration. Propellants: propane, HFC134a. Solvent: ethanol. Campus wind tunnels used for development.'}
           </p>
         </motion.div>
