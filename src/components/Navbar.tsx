@@ -40,7 +40,7 @@ export default function Navbar() {
           >
             <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-amber-500/60 shadow-lg shadow-amber-500/20">
               <img
-                src="/images/logo-60sec.jpg"
+                src="/images/logo-60sec.png"
                 alt="60 שניות של חומ״ס"
                 className="w-full h-full object-cover"
                 onError={(e) => {
