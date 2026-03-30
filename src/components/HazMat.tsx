@@ -86,7 +86,7 @@ export default function HazMat() {
           </div>
           <p className="text-xs text-gray-400 leading-relaxed">
             {isHe
-              ? 'נגזרת פנטניל באירוסול הרגה 15% (130 מ-850) מבני הערובות למרות פעולות חילוץ. זה האנלוג ההיסטורי העיקרי להבנת הסיכון.'
+              ? 'נגזרת פנטניל באירוסול הרגה 15% (130 מ-850) מבני הערובה למרות פעולות חילוץ. זה האנלוג ההיסטורי העיקרי להבנת הסיכון.'
               : 'Aerosolized fentanyl derivative killed 15% (130 of 850) hostages despite rescue operations. Primary historical analog for risk assessment.'}
           </p>
         </motion.div>
