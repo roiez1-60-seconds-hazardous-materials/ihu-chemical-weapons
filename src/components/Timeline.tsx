@@ -1,7 +1,7 @@
 'use client';
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Flame, Eye, ShoppingCart, FileWarning, Bomb, Crosshair, Volume2, VolumeX, Mic, MicOff } from 'lucide-react';
+import { Flame, Eye, ShoppingCart, FileWarning, Bomb, Crosshair, Volume2, VolumeX, Mic, MicOff, Play } from 'lucide-react';
 import { useLang } from '@/lib/LanguageContext';
 
 /* ── Web Audio API sound generator ── */
@@ -12,7 +12,15 @@ class TimelineAudio {
 
   private getCtx() {
     if (!this.ctx) this.ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    // Resume if suspended (browser autoplay policy)
+    if (this.ctx.state === 'suspended') this.ctx.resume();
     return this.ctx;
+  }
+
+  /** Must be called from a user gesture to unlock audio */
+  unlock() {
+    const ctx = this.getCtx();
+    if (ctx.state === 'suspended') ctx.resume();
   }
 
   play(type: 'blip' | 'alert' | 'boom' | 'sweep' | 'warning' | 'strike', id: string) {
@@ -130,7 +138,7 @@ class TimelineAudio {
 
 /* ── Speech narration using Web Speech API ── */
 class TimelineNarrator {
-  public enabled = true;
+  public enabled = false; // starts disabled — user must opt in
   private narrated = new Set<string>();
 
   speak(text: string, lang: string, id: string) {
@@ -207,27 +215,50 @@ const eventsData: { year: string; icon: typeof Eye; colorClass: string; sound: '
   { year: '2026', icon: Crosshair, sound: 'strike', colorClass: 'border-red-600 bg-red-600/10 text-red-500', he: { label: 'סיכול', desc: 'תקיפות צה"ל על 3 מטרות ספציפיות בקמפוס IHU — מרכז כימיה, מנהרות רוח, מרכז הנדסה' }, en: { label: 'Targeted Strike', desc: 'IDF strikes on 3 specific IHU campus targets — Chemistry, Wind Tunnels, Engineering' } },
 ];
 
-function TimelineEvent({ ev, index, lang, narrationOn }: { ev: typeof eventsData[0]; index: number; lang: string; narrationOn: boolean }) {
+function TimelineEvent({ ev, index, lang, narrationOn, soundOn, onActivate }: { ev: typeof eventsData[0]; index: number; lang: string; narrationOn: boolean; soundOn: boolean; onActivate: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });
-  const soundPlayed = useRef(false);
+  const autoPlayed = useRef(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
+  // Auto-play on scroll (only works if AudioContext already unlocked)
   useEffect(() => {
-    if (isInView && !soundPlayed.current) {
-      soundPlayed.current = true;
-      // Play sound effect
-      if (audioEngine) audioEngine.play(ev.sound, ev.year);
-      // Narrate after a short delay (let sound play first)
-      if (narrator && narrationOn) {
+    if (isInView && !autoPlayed.current && soundOn) {
+      autoPlayed.current = true;
+      if (audioEngine && audioEngine.enabled) {
+        audioEngine.play(ev.sound, `auto-${ev.year}`);
+      }
+      if (narrator && narrationOn && narrator.enabled) {
         const script = narrationScripts[ev.year];
         if (script) {
           setTimeout(() => {
-            narrator.speak(lang === 'he' ? script.he : script.en, lang, ev.year);
+            narrator.speak(lang === 'he' ? script.he : script.en, lang, `auto-${ev.year}`);
           }, 800);
         }
       }
     }
-  }, [isInView, ev.sound, ev.year, lang, narrationOn]);
+  }, [isInView, ev.sound, ev.year, lang, narrationOn, soundOn]);
+
+  // Manual play on card click — this is a user gesture so it unlocks audio!
+  const handleClick = useCallback(() => {
+    onActivate(); // unlock AudioContext via user gesture
+    setIsPlaying(true);
+    setTimeout(() => setIsPlaying(false), 2000);
+
+    if (audioEngine) {
+      audioEngine.unlock();
+      // Force play even if already played
+      audioEngine.play(ev.sound, `click-${ev.year}-${Date.now()}`);
+    }
+    if (narrator && narrationOn) {
+      const script = narrationScripts[ev.year];
+      if (script) {
+        setTimeout(() => {
+          narrator.speak(lang === 'he' ? script.he : script.en, lang, `click-${ev.year}-${Date.now()}`);
+        }, 600);
+      }
+    }
+  }, [ev, lang, narrationOn, onActivate]);
 
   const Icon = ev.icon;
   const data = lang === 'he' ? ev.he : ev.en;
@@ -239,30 +270,45 @@ function TimelineEvent({ ev, index, lang, narrationOn }: { ev: typeof eventsData
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: '-30px' }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="relative flex items-start gap-4 mb-8"
+      className="relative flex items-start gap-4 mb-8 cursor-pointer group"
+      onClick={handleClick}
     >
-      {/* Icon circle — pulses when entering view */}
+      {/* Icon circle */}
       <div className="flex-shrink-0 z-10">
         <motion.div
           whileHover={{ scale: 1.15 }}
-          animate={isInView ? {
+          animate={isPlaying ? {
+            boxShadow: [
+              '0 0 0px rgba(255,255,255,0)',
+              '0 0 25px rgba(255,255,255,0.3)',
+              '0 0 0px rgba(255,255,255,0)',
+            ]
+          } : isInView ? {
             boxShadow: [
               `0 0 0px ${ev.colorClass.includes('red') ? 'rgba(239,68,68,0)' : ev.colorClass.includes('amber') ? 'rgba(245,158,11,0)' : 'rgba(59,130,246,0)'}`,
               `0 0 20px ${ev.colorClass.includes('red') ? 'rgba(239,68,68,0.4)' : ev.colorClass.includes('amber') ? 'rgba(245,158,11,0.4)' : 'rgba(59,130,246,0.4)'}`,
               `0 0 0px ${ev.colorClass.includes('red') ? 'rgba(239,68,68,0)' : ev.colorClass.includes('amber') ? 'rgba(245,158,11,0)' : 'rgba(59,130,246,0)'}`,
             ]
           } : {}}
-          transition={{ duration: 2, repeat: isInView ? 2 : 0 }}
+          transition={{ duration: 2, repeat: isPlaying ? 1 : isInView ? 2 : 0 }}
           className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 ${ev.colorClass} flex items-center justify-center bg-[#0d0d1a]`}
         >
           <Icon size={18} />
         </motion.div>
       </div>
       {/* Content card */}
-      <div className={`flex-1 p-4 rounded-xl border ${ev.colorClass} backdrop-blur-sm`}>
+      <div className={`flex-1 p-4 rounded-xl border ${ev.colorClass} backdrop-blur-sm group-hover:bg-white/[0.02] transition-colors`}>
         <div className="flex items-center gap-2 mb-1">
           <span className="font-mono text-xl font-black">{ev.year}</span>
           <span className="text-xs font-bold opacity-70">{data.label}</span>
+          {/* Play indicator */}
+          <motion.span
+            className="text-[8px] font-mono opacity-0 group-hover:opacity-60 transition-opacity"
+            animate={isPlaying ? { opacity: [0.5, 1, 0.5] } : {}}
+            transition={{ duration: 0.5, repeat: isPlaying ? 3 : 0 }}
+          >
+            {isPlaying ? '▶ ...' : (lang === 'he' ? '▶ לחץ להשמעה' : '▶ click to play')}
+          </motion.span>
         </div>
         <p className="text-xs text-gray-400 leading-relaxed">{data.desc}</p>
       </div>
@@ -274,8 +320,45 @@ export default function Timeline() {
   const { t, lang } = useLang();
   const [soundOn, setSoundOn] = useState(true);
   const [narrationOn, setNarrationOn] = useState(false);
+  const [isPlayingAll, setIsPlayingAll] = useState(false);
+
+  /** Called from user gesture to unlock AudioContext */
+  const activateAudio = useCallback(() => {
+    if (audioEngine) audioEngine.unlock();
+  }, []);
+
+  /** Play all events sequentially with sound + narration */
+  const playAll = useCallback(() => {
+    activateAudio();
+    if (audioEngine) { audioEngine.enabled = true; audioEngine.reset(); }
+    if (narrator) { narrator.reset(); narrator.enabled = narrationOn; }
+    setSoundOn(true);
+    setIsPlayingAll(true);
+
+    eventsData.forEach((ev, i) => {
+      const delay = i * (narrationOn ? 6000 : 2000);
+      setTimeout(() => {
+        if (audioEngine) audioEngine.play(ev.sound, `all-${ev.year}-${Date.now()}`);
+        if (narrator && narrationOn) {
+          const script = narrationScripts[ev.year];
+          if (script) {
+            setTimeout(() => {
+              narrator.speak(lang === 'he' ? script.he : script.en, lang, `all-${ev.year}-${Date.now()}`);
+            }, 600);
+          }
+        }
+        // Scroll to event
+        const el = document.getElementById(`timeline-event-${ev.year}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, delay);
+    });
+
+    // End playing state
+    setTimeout(() => setIsPlayingAll(false), eventsData.length * (narrationOn ? 6000 : 2000) + 1000);
+  }, [lang, narrationOn, activateAudio]);
 
   const toggleSound = useCallback(() => {
+    activateAudio();
     setSoundOn(prev => {
       const next = !prev;
       if (audioEngine) {
@@ -283,15 +366,15 @@ export default function Timeline() {
         if (next) audioEngine.reset();
       }
       if (!next) {
-        // Also disable narration when sound is off
         setNarrationOn(false);
         if (narrator) { narrator.enabled = false; narrator.stop(); }
       }
       return next;
     });
-  }, []);
+  }, [activateAudio]);
 
   const toggleNarration = useCallback(() => {
+    activateAudio();
     setNarrationOn(prev => {
       const next = !prev;
       if (narrator) {
@@ -299,22 +382,39 @@ export default function Timeline() {
         if (next) narrator.reset();
         else narrator.stop();
       }
-      // Auto-enable sound when narration is turned on
       if (next && !soundOn) {
         setSoundOn(true);
         if (audioEngine) { audioEngine.enabled = true; audioEngine.reset(); }
       }
       return next;
     });
-  }, [soundOn]);
+  }, [soundOn, activateAudio]);
 
   return (
     <section id="timeline" className="relative py-20 px-4 max-w-3xl mx-auto">
       <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-center mb-16">
         <h2 className="text-3xl sm:text-5xl font-black text-white mb-2">{t('timeline.title')}</h2>
         <p className="text-gray-400">{t('timeline.subtitle')}</p>
-        {/* Sound & Narration toggles */}
-        <div className="flex items-center justify-center gap-2 mt-3">
+        {/* Controls */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
+          {/* Play All button — the main CTA */}
+          <motion.button
+            onClick={playAll}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            disabled={isPlayingAll}
+            className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[11px] font-mono font-bold border transition-colors ${
+              isPlayingAll
+                ? 'border-green-500/50 bg-green-500/20 text-green-400 animate-pulse'
+                : 'border-green-500/30 bg-green-500/10 text-green-400 hover:bg-green-500/20'
+            }`}
+          >
+            <Play size={14} />
+            {isPlayingAll
+              ? (lang === 'he' ? 'מנגן...' : 'Playing...')
+              : (lang === 'he' ? 'נגן הכל' : 'Play All')}
+          </motion.button>
+
           <motion.button
             onClick={toggleSound}
             whileHover={{ scale: 1.1 }}
@@ -347,6 +447,9 @@ export default function Timeline() {
               : (lang === 'he' ? 'קריינות כבויה' : 'Narrate OFF')}
           </motion.button>
         </div>
+        <p className="text-[9px] text-gray-600 mt-2 font-mono">
+          {lang === 'he' ? 'לחצו על כל אירוע להשמעת צליל וקריינות, או "נגן הכל" לחוויה מלאה' : 'Click any event for sound & narration, or "Play All" for the full experience'}
+        </p>
       </motion.div>
       <div className="relative">
         {/* Vertical fuse line */}
@@ -362,7 +465,9 @@ export default function Timeline() {
         </motion.div>
 
         {eventsData.map((ev, i) => (
-          <TimelineEvent key={ev.year} ev={ev} index={i} lang={lang} narrationOn={narrationOn} />
+          <div key={ev.year} id={`timeline-event-${ev.year}`}>
+            <TimelineEvent ev={ev} index={i} lang={lang} narrationOn={narrationOn} soundOn={soundOn} onActivate={activateAudio} />
+          </div>
         ))}
       </div>
     </section>
