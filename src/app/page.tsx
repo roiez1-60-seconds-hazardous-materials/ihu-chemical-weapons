@@ -15,6 +15,7 @@ import Gallery from '@/components/Gallery';
 import Sources from '@/components/Sources';
 import Insights from '@/components/Insights';
 import Footer from '@/components/Footer';
+import { ProgressBar, BackToTop } from '@/components/ReadingProgress';
 
 const Divider = () => (
   <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto my-4" />
@@ -25,6 +26,8 @@ export default function Home() {
     <LangProvider>
       <ParticleBackground />
       <Navbar />
+      <ProgressBar />
+      <BackToTop />
       <main className="relative z-10 pt-16">
         <Hero />
         <Divider />
