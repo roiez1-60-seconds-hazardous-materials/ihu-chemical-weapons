@@ -1,114 +1,104 @@
 'use client';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Skull, AlertTriangle, Droplets, Wind as WindIcon, Syringe } from 'lucide-react';
+import { Skull, AlertTriangle, Syringe } from 'lucide-react';
 import { useLang } from '@/lib/LanguageContext';
 
 interface Chemical {
   id: string;
   color: string;
-  lethality: number; // 0-100 scale
   icon: typeof Skull;
-  he: { name: string; dose: string; onset: string; mechanism: string; routes: string; antidote: string };
-  en: { name: string; dose: string; onset: string; mechanism: string; routes: string; antidote: string };
+  potencyVsFentanyl: string;
+  he: { name: string; ld50: string; onset: string; mechanism: string; routes: string; antidote: string; source: string };
+  en: { name: string; ld50: string; onset: string; mechanism: string; routes: string; antidote: string; source: string };
 }
 
 const chemicals: Chemical[] = [
   {
-    id: 'fentanyl', color: '#ef4444', lethality: 70, icon: Skull,
+    id: 'fentanyl', color: '#ef4444', icon: Skull, potencyVsFentanyl: '×1',
     he: {
       name: 'פנטניל',
-      dose: '2 מיליגרם — מנה קטלנית למבוגר',
-      onset: 'שניות עד דקות בשאיפה, דקות בעור',
-      mechanism: 'נקשר לקולטני אופיואיד מיו (μ) במוח. גורם לדיכוי נשימתי מוחלט, איבוד הכרה, ומוות בהיעדר טיפול.',
-      routes: 'שאיפה (אירוסול), עורי (ספיגה), בליעה, הזרקה',
-      antidote: 'נלוקסון (Narcan) — יש לתת תוך דקות. ייתכן צורך במנות חוזרות.',
+      ld50: 'LD50 מוערך: ~0.03 mg/kg (אדם, IV) — כ-2 מ"ג למבוגר 70 ק"ג. בשאיפה: מוערך ~0.004 mg/kg.',
+      onset: 'שניות עד דקות בשאיפה, דקות בספיגה עורית',
+      mechanism: 'נקשר לקולטני אופיואיד מיו (μ) במוח וגזע המוח. גורם לדיכוי נשימתי מרכזי, איבוד הכרה, ומוות ללא טיפול.',
+      routes: 'שאיפה (אירוסול), ספיגה עורית, בליעה, הזרקה',
+      antidote: 'נלוקסון (Narcan) — אנטגוניסט תחרותי לקולטן μ. יש לתת תוך דקות. עשויות להידרש מנות חוזרות (זמן מחצית חיים קצר מפנטניל).',
+      source: 'NIOSH, CDC, Pubchem CID 3345',
     },
     en: {
       name: 'Fentanyl',
-      dose: '2 milligrams — lethal dose for adult',
+      ld50: 'Estimated LD50: ~0.03 mg/kg (human, IV) — ~2 mg for 70 kg adult. Inhalation: estimated ~0.004 mg/kg.',
       onset: 'Seconds to minutes (inhalation), minutes (dermal)',
-      mechanism: 'Binds to μ-opioid receptors in the brain. Causes complete respiratory depression, loss of consciousness, and death without treatment.',
-      routes: 'Inhalation (aerosol), dermal (absorption), ingestion, injection',
-      antidote: 'Naloxone (Narcan) — must be administered within minutes. Repeat doses may be needed.',
+      mechanism: 'Binds to μ-opioid receptors in brain and brainstem. Causes central respiratory depression, loss of consciousness, and death without treatment.',
+      routes: 'Inhalation (aerosol), dermal absorption, ingestion, injection',
+      antidote: 'Naloxone (Narcan) — competitive μ-receptor antagonist. Must administer within minutes. Repeat doses often needed (shorter half-life than fentanyl).',
+      source: 'NIOSH, CDC, PubChem CID 3345',
     },
   },
   {
-    id: 'carfentanil', color: '#dc2626', lethality: 98, icon: Skull,
+    id: 'carfentanil', color: '#dc2626', icon: Skull, potencyVsFentanyl: '×100',
     he: {
       name: 'קרפנטניל',
-      dose: '0.02 מיליגרם (20 מיקרוגרם) — מנה קטלנית',
+      ld50: 'LD50 מוערך: ~0.02 mg/kg (קופים, IV). חזק פי 100 מפנטניל, פי 10,000 ממורפין. מנה של מיקרוגרמים בודדים עלולה להיות קטלנית לאדם.',
       onset: 'שניות בשאיפה',
-      mechanism: 'חזק פי 100 מפנטניל. אותו מנגנון — דיכוי נשימתי — אבל במינון זעיר בהרבה. שימש ככל הנראה באירוע תיאטרון מוסקבה (2002). נמצא במחקרי IHU.',
-      routes: 'שאיפה, עורי (ספיגה מיידית), בליעה',
-      antidote: 'נלוקסון — נדרשות מנות גבוהות מאוד וחוזרות. סיכון גבוה למוות גם עם טיפול.',
+      mechanism: 'אותו מנגנון כפנטניל — קשירה לקולטן μ — אבל עם זיקה גבוהה משמעותית. נגזרת של פנטניל שפותחה ב-1974 לשימוש וטרינרי בלבד (הרדמת פילים). ככל הנראה שימש באירוע תיאטרון מוסקבה 2002.',
+      routes: 'שאיפה, ספיגה עורית מיידית, בליעה',
+      antidote: 'נלוקסון — נדרשות מנות גבוהות מאוד וחוזרות. סיכון גבוה למוות גם עם טיפול בגלל העוצמה.',
+      source: 'Van Bever et al. 1976, OPCW, CDC Emergency Response Card',
     },
     en: {
       name: 'Carfentanil',
-      dose: '0.02 mg (20 micrograms) — lethal dose',
+      ld50: 'Estimated LD50: ~0.02 mg/kg (primates, IV). 100× fentanyl potency, 10,000× morphine. Microgram quantities potentially lethal to humans.',
       onset: 'Seconds (inhalation)',
-      mechanism: '100x more potent than fentanyl. Same mechanism — respiratory depression — but at trace doses. Likely used in Moscow theater incident (2002). Found in IHU research.',
-      routes: 'Inhalation, dermal (immediate absorption), ingestion',
-      antidote: 'Naloxone — very high and repeated doses required. High mortality risk even with treatment.',
+      mechanism: 'Same μ-opioid mechanism as fentanyl but with significantly higher binding affinity. Fentanyl derivative developed 1974 for veterinary use only (elephant sedation). Likely used in Moscow theater incident 2002.',
+      routes: 'Inhalation, immediate dermal absorption, ingestion',
+      antidote: 'Naloxone — very high and repeated doses required. High mortality risk even with treatment due to extreme potency.',
+      source: 'Van Bever et al. 1976, OPCW, CDC Emergency Response Card',
     },
   },
   {
-    id: 'medetomidine', color: '#f59e0b', lethality: 45, icon: Syringe,
+    id: 'medetomidine', color: '#f59e0b', icon: Syringe, potencyVsFentanyl: 'N/A',
     he: {
       name: 'מדטומידין',
-      dose: '18 גרם מילוי ברימון (40% ריכוז) — גורם לאיבוד הכרה',
-      onset: 'דקות ספורות בשאיפה',
-      mechanism: 'אגוניסט אלפא-2 אדרנרגי. גורם לסדציה עמוקה, ירידה בלחץ דם, האטת קצב לב, ואיבוד הכרה. בשימוש וטרינרי להרדמת בעלי חיים גדולים.',
-      routes: 'שאיפה (אירוסול מרימון או מייצר ערפל), הזרקה',
-      antidote: 'אטיפמזול (Atipamezole) — נוגד ספציפי. לא זמין בדרך כלל בצוותי חירום.',
+      ld50: 'LD50 (עכברים, IV): 6.4 mg/kg. לא קטלני בפני עצמו ברוב המקרים — גורם לסדציה עמוקה ואיבוד הכרה. המטרה: נטרול ללא מוות (אבל סיכון למוות מנפילה, חסימת נתיבי אוויר, היפותרמיה).',
+      onset: 'דקות ספורות בשאיפה מאירוסול',
+      mechanism: 'אגוניסט סלקטיבי של קולטני אלפא-2 אדרנרגיים. גורם לסדציה, ירידה בלחץ דם (היפוטנסיה), האטת קצב לב (ברדיקרדיה), ואיבוד הכרה. משמש ברפואה וטרינרית להרדמת בעלי חיים.',
+      routes: 'שאיפה (אירוסול מרימון ABC-M7A2/A3 או מייצר ערפל), הזרקה',
+      antidote: 'אטיפמזול (Atipamezole) — אנטגוניסט ספציפי לאלפא-2. לא זמין בצוותי חירום רגילים. ריכוז ברימון: 40% מדטומידין, 18 גרם מילוי.',
+      source: 'U.S. State Dept Compliance Report 2023, Iran Watch, Pfizer veterinary data',
     },
     en: {
       name: 'Medetomidine',
-      dose: '18g grenade fill (40% concentration) — causes unconsciousness',
-      onset: 'Minutes (inhalation)',
-      mechanism: 'Alpha-2 adrenergic agonist. Causes deep sedation, blood pressure drop, bradycardia, and loss of consciousness. Veterinary use for large animal sedation.',
-      routes: 'Inhalation (aerosol from grenade or fog generator), injection',
-      antidote: 'Atipamezole — specific antagonist. Not typically available to emergency responders.',
+      ld50: 'LD50 (mice, IV): 6.4 mg/kg. Not typically lethal alone — causes deep sedation and unconsciousness. Goal: incapacitation without death (but risk of death from falls, airway obstruction, hypothermia).',
+      onset: 'Minutes (aerosol inhalation)',
+      mechanism: 'Selective alpha-2 adrenergic agonist. Causes sedation, hypotension, bradycardia, and loss of consciousness. Used in veterinary medicine for large animal sedation.',
+      routes: 'Inhalation (aerosol from ABC-M7A2/A3 grenade or fog generator), injection',
+      antidote: 'Atipamezole — specific alpha-2 antagonist. Not available to standard emergency responders. Grenade fill: 40% medetomidine, 18g payload.',
+      source: 'U.S. State Dept Compliance Report 2023, Iran Watch, Pfizer veterinary data',
     },
   },
   {
-    id: 'analogs', color: '#8b5cf6', lethality: 85, icon: AlertTriangle,
+    id: 'analogs', color: '#8b5cf6', icon: AlertTriangle, potencyVsFentanyl: '×1–10,000',
     he: {
       name: 'אנלוגים של פנטניל (70+)',
-      dose: 'משתנה — חלקם חזקים פי 10,000 ממורפין',
+      ld50: 'משתנה מאוד — טווח עוצמה מפנטניל (×1) עד פי 10,000 ממורפין. חלק מהאנלוגים לא תועדו בספרות המדעית ואין להם LD50 ידוע.',
       onset: 'שניות עד דקות',
-      mechanism: 'נגזרות כימיות של פנטניל עם שינויים מולקולריים. IHU סינתז למעלה מ-70 אנלוגים שונים. חלקם לא מוכרים לרפואה המערבית ולא ניתנים לזיהוי בבדיקות סטנדרטיות.',
-      routes: 'שאיפה, עורי, בליעה',
-      antidote: 'נלוקסון — עשוי לעבוד חלקית. יעילות לא ידועה נגד אנלוגים לא מוכרים.',
+      mechanism: 'נגזרות כימיות של פנטניל עם שינויים במבנה המולקולרי. IHU פרסם מחקרים על סינתזת למעלה מ-70 אנלוגים שונים. חלקם לא מוכרים לרפואה המערבית ועשויים להתחמק מבדיקות טוקסיקולוגיות סטנדרטיות.',
+      routes: 'שאיפה, ספיגה עורית, בליעה',
+      antidote: 'נלוקסון — יעילות חלקית בלבד. לא ניתן לדעת מראש אם יעבוד נגד אנלוג לא מוכר. ייתכן צורך במינונים גבוהים בהרבה מהרגיל.',
+      source: 'Gorwitz/ISIS Report 2025, IHU published research papers',
     },
     en: {
       name: 'Fentanyl Analogues (70+)',
-      dose: 'Variable — some 10,000x more potent than morphine',
+      ld50: 'Highly variable — potency range from fentanyl (×1) to 10,000× morphine. Some analogues lack published LD50 data in scientific literature.',
       onset: 'Seconds to minutes',
-      mechanism: 'Chemical derivatives of fentanyl with molecular modifications. IHU synthesized over 70 different analogues. Some are unknown to Western medicine and undetectable by standard tests.',
-      routes: 'Inhalation, dermal, ingestion',
-      antidote: 'Naloxone — may work partially. Efficacy unknown against novel analogues.',
+      mechanism: 'Chemical derivatives of fentanyl with molecular structure modifications. IHU published research on synthesis of 70+ different analogues. Some unknown to Western medicine, potentially evading standard toxicological screening.',
+      routes: 'Inhalation, dermal absorption, ingestion',
+      antidote: 'Naloxone — partial efficacy only. Cannot predict effectiveness against unknown analogues. Much higher doses than standard may be required.',
+      source: 'Gorwitz/ISIS Report 2025, IHU published research papers',
     },
   },
 ];
-
-function DangerMeter({ level, color }: { level: number; color: string }) {
-  return (
-    <div className="relative w-full h-3 bg-gray-800 rounded-full overflow-hidden">
-      <motion.div
-        className="h-full rounded-full"
-        style={{ backgroundColor: color }}
-        initial={{ width: '0%' }}
-        whileInView={{ width: `${level}%` }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.5, ease: 'easeOut' }}
-      />
-      <div className="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-mono text-white/70">
-        {level}/100
-      </div>
-    </div>
-  );
-}
 
 export default function ChemDanger() {
   const { lang } = useLang();
@@ -119,10 +109,10 @@ export default function ChemDanger() {
     <section id="chemistry" className="py-20 px-4 max-w-5xl mx-auto">
       <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-center mb-12">
         <h2 className="text-3xl sm:text-5xl font-black text-white mb-2">
-          {isHe ? 'מדרג הסכנה' : 'Danger Scale'}
+          {isHe ? 'החומרים בתוכנית' : 'The Agents'}
         </h2>
         <p className="text-gray-400 text-sm">
-          {isHe ? 'ארבעת החומרים המרכזיים בתוכנית — לחצו לפרטים' : 'The four key agents in the program — click for details'}
+          {isHe ? 'ארבעת החומרים המרכזיים — לחצו לפרטים טוקסיקולוגיים' : 'The four key agents — click for toxicological details'}
         </p>
       </motion.div>
 
@@ -144,29 +134,21 @@ export default function ChemDanger() {
             >
               {/* Header */}
               <div className="p-4">
-                <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${chem.color}15`, border: `1px solid ${chem.color}40` }}>
                     <Icon size={20} style={{ color: chem.color }} />
                   </div>
                   <div className="flex-1">
                     <h3 className="text-sm font-bold text-white">{d.name}</h3>
-                    <p className="text-[10px] text-gray-500">{d.dose}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded" style={{ color: chem.color, backgroundColor: `${chem.color}15`, border: `1px solid ${chem.color}30` }}>
+                        {isHe ? 'עוצמה vs פנטניל' : 'Potency vs Fentanyl'}: {chem.potencyVsFentanyl}
+                      </span>
+                    </div>
                   </div>
-                  <motion.span
-                    animate={{ rotate: isOpen ? 180 : 0 }}
-                    className="text-gray-500 text-xs"
-                  >
-                    ▼
-                  </motion.span>
+                  <motion.span animate={{ rotate: isOpen ? 180 : 0 }} className="text-gray-500 text-xs">▼</motion.span>
                 </div>
-
-                {/* Danger meter */}
-                <div className="mb-1">
-                  <div className="flex justify-between mb-1">
-                    <span className="text-[9px] font-mono text-gray-500">{isHe ? 'רמת קטלניות' : 'Lethality'}</span>
-                  </div>
-                  <DangerMeter level={chem.lethality} color={chem.color} />
-                </div>
+                <p className="text-[10px] text-gray-500 leading-relaxed">{d.ld50}</p>
               </div>
 
               {/* Expandable detail */}
@@ -191,6 +173,10 @@ export default function ChemDanger() {
                           <p className="text-[11px] text-gray-400 leading-relaxed mt-0.5">{field.value}</p>
                         </div>
                       ))}
+                      {/* Source */}
+                      <div className="pt-1 border-t border-gray-800/30">
+                        <span className="text-[8px] text-gray-600 font-mono">{isHe ? 'מקורות' : 'Sources'}: {d.source}</span>
+                      </div>
                     </div>
                   </motion.div>
                 )}
