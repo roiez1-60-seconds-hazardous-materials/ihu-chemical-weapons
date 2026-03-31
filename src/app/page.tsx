@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import Timeline from '@/components/Timeline';
 import Paradigm from '@/components/Paradigm';
+import ChemDanger from '@/components/ChemDanger';
 import Chain from '@/components/Chain';
 import NetworkGraph from '@/components/NetworkGraph';
 import Platforms from '@/components/Platforms';
@@ -34,6 +35,8 @@ export default function Home() {
         <Timeline />
         <Divider />
         <Paradigm />
+        <Divider />
+        <ChemDanger />
         <Divider />
         <Chain />
         <Divider />

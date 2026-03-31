@@ -7,7 +7,7 @@ import { useLang } from '@/lib/LanguageContext';
 const WHATSAPP_LINK = 'https://chat.whatsapp.com/K4NzcZucmimKYFOXE3VVtD?mode=gi_t';
 
 const sections = [
-  'home','timeline','paradigm','chain','network',
+  'home','timeline','paradigm','chemistry','chain','network',
   'platforms','response','hazmat','glossary','gallery'
 ];
 
