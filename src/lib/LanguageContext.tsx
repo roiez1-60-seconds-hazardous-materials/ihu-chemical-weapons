@@ -32,7 +32,7 @@ const dict: Record<string, Record<Lang, string>> = {
   'hero.cta': { he: 'לדו"ח המלא ↓', en: 'Full Report ↓' },
   'summary.title': { he: 'תקציר מנהלים', en: 'Executive Summary' },
   'summary.p1': { he: 'איראן פיתחה וחימשה חומרים כימיים מבוססי-תרופות (PBAs) באמצעות תוכנית מחקר בת שני עשורים שמרכזה באוניברסיטת אימאם חוסיין (IHU) של משמרות המהפכה.', en: 'Iran has developed and weaponized pharmaceutical-based agents (PBAs) through a two-decade research program centered at Imam Hossein University (IHU), the IRGC\'s sole academic institution.' },
-  'summary.p2': { he: 'תוכנית ה-PBA מסמלת מעבר מנשק השמדה המונית לנשק שיתוק טקטי — כלים המיועדים לשימוש יומיומי במלחמות פרוקסי באזור האפור.', en: "Iran's PBA program represents a paradigm shift from WMDs to tactical incapacitation weapons — tools designed for everyday use in proxy wars in the gray zone." },
+  'summary.p2': { he: 'תוכנית ה-PBA מסמלת מעבר מנשק השמדה המונית לנשק הגורם לאיבוד הכרה ומוות — כלים המיועדים לשימוש יומיומי במלחמות פרוקסי באזור האפור.', en: "Iran's PBA program represents a paradigm shift from WMDs to tactical incapacitation weapons — tools designed for everyday use in proxy wars in the gray zone." },
   'summary.p3': { he: 'המחקר שולב ישירות בשרשרת הייצור הצבאית של SPND וסופק לארגוני פרוקסי כולל חיזבאללה.', en: 'Research was integrated directly into SPND\'s military production chain and supplied to proxy organizations including Hezbollah.' },
   'campus.title': { he: 'קמפוס אקדמי או בסיס צבאי?', en: 'Academic Campus or Military Base?' },
   'campus.subtitle': { he: 'מרכז המחקר והפיתוח של משמרות המהפכה ללוחמה אסימטרית', en: "The IRGC's central R&D complex for asymmetric warfare" },

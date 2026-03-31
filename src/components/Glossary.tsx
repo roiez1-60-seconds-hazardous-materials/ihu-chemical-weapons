@@ -28,7 +28,7 @@ const terms: { term: string; cat: Cat; he: string; en: string }[] = [
   { term: 'AChE', cat: 'tech', he: 'אצטילכולינאסטראז — אנזים שנחסם ע"י חומרי עצב מסורתיים (סארין, VX).', en: 'Acetylcholinesterase — enzyme inhibited by traditional nerve agents (sarin, VX).' },
   { term: 'RCA', cat: 'tech', he: 'חומרי פיזור מהומות — כגון CS, גז מדמיע. רימוני "אשכן".', en: 'Riot Control Agents — e.g. CS tear gas. "Ashkan" grenades.' },
   { term: 'SAR', cat: 'tech', he: 'יחסי מבנה-פעילות — מסגרת המקשרת שינויים מולקולריים להשפעות ביולוגיות.', en: 'Structure-Activity Relationship — framework linking molecular changes to biological effects.' },
-  { term: 'פנטניל / Fentanyl', cat: 'chem', he: 'אופיואיד סינתטי חזק — קטלני מעל 2 מ"ג. משמש כסוכן משתק/קטלני.', en: 'Potent synthetic opioid — lethal above 2 mg. Used as incapacitating/lethal agent.' },
+  { term: 'פנטניל / Fentanyl', cat: 'chem', he: 'אופיואיד סינתטי חזק — קטלני מעל 2 מ"ג. גורם לאיבוד הכרה ומוות במינון גבוה.', en: 'Potent synthetic opioid — lethal above 2 mg. Used as incapacitating/lethal agent.' },
   { term: 'מדטומידין / Medetomidine', cat: 'chem', he: 'אגוניסט אלפא-2 אדרנרגי — מרגיע וטרינרי שהוסב לנשק. מנטרל נלוקסון בשילוב עם פנטניל.', en: 'Alpha-2 adrenergic agonist — veterinary sedative weaponized. Neutralizes naloxone when combined with fentanyl.' },
   { term: 'נלוקסון / Naloxone', cat: 'chem', he: 'תרופה נגד מנת יתר של אופיואידים — עלולה להיות לא יעילה נגד שילוב פנטניל+מדטומידין.', en: 'Opioid overdose antidote — may be ineffective against fentanyl+medetomidine combination.' },
   { term: 'קטמין / Ketamine', cat: 'chem', he: 'חומר הרדמה המנתק תחושות — יוצר ב-IHU כולל הצורה הפעילה (S) של החומר.', en: 'Dissociative anesthetic — synthesized at IHU including active (S)-enantiomer.' },

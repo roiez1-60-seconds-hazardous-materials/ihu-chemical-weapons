@@ -300,7 +300,7 @@ export function PlatformsSection() {
   const platforms = [
     { icon: <AlertTriangle size={32} />, title: lang === 'he' ? 'רימוני גז טקטיים' : 'Tactical Gas Grenades', desc: lang === 'he' ? 'ABC-M7A2/M7A3 עם 40% מדטומידין. MK 2 38mm. רימוני "אשכן".' : 'ABC-M7A2/M7A3 with 40% medetomidine. MK 2 38mm. "Ashkan" grenades.', color: 'red' },
     { icon: <Plane size={32} />, title: lang === 'he' ? 'חימוש נישא רחפנים' : 'Drone-Carried Munitions', desc: lang === 'he' ? 'מל"ט "ארבעין" — 7 ק"ג מטען, 10 ק"מ טווח, שעת טיסה.' : '"Arbaeen" drone — 7kg payload, 10km range, 1hr flight.', color: 'blue' },
-    { icon: <Wind size={32} />, title: lang === 'he' ? 'מערכות יצרני ערפל' : 'Fog Generator Systems', desc: lang === 'he' ? '"מייצר ערפל" על משאית — פיזור נפחי של חומרים משתקים.' : 'Vehicle-mounted fog generator — volumetric dispersal of incapacitants.', color: 'amber' },
+    { icon: <Wind size={32} />, title: lang === 'he' ? 'מערכות יצרני ערפל' : 'Fog Generator Systems', desc: lang === 'he' ? '"מייצר ערפל" על משאית — פיזור נפחי של חומרים הגורמים לאיבוד הכרה.' : 'Vehicle-mounted fog generator — volumetric dispersal of incapacitants.', color: 'amber' },
   ];
 
   return (
@@ -620,7 +620,7 @@ export function InsightsSection() {
       <Card className="border-red-500/30 text-center">
         <p className="text-base text-gray-300 leading-relaxed max-w-3xl mx-auto">
           {lang === 'he'
-            ? 'תוכנית ה-PBA של איראן מסמלת מעבר מנשק השמדה המונית לנשק שיתוק טקטי — כלים המיועדים לשימוש יומיומי במלחמות פרוקסי באזור האפור. האיום פעיל, היכולת הוכחה, ומערכות המשלוח מבצעיות.'
+            ? 'תוכנית ה-PBA של איראן מסמלת מעבר מנשק השמדה המונית לנשק הגורם לאיבוד הכרה ומוות — כלים המיועדים לשימוש יומיומי במלחמות פרוקסי באזור האפור. האיום פעיל, היכולת הוכחה, ומערכות המשלוח מבצעיות.'
             : "Iran's PBA program represents a shift from WMDs to tactical incapacitation — tools for everyday proxy warfare in the gray zone. The threat is active, the capability demonstrated, and the delivery systems operational."}
         </p>
       </Card>

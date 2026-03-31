@@ -4,7 +4,7 @@ import { FlaskConical, Wind, Users, Skull } from 'lucide-react';
 import { useLang } from '@/lib/LanguageContext';
 
 const domains = [
-  { icon: FlaskConical, color: 'blue', he: { title: 'כימיה מבוססת תרופות', desc: 'ייצור ועיבוד של חומרים משתקים וקטלניים' }, en: { title: 'Pharmaceutical Chemistry', desc: 'Synthesis & formulation of incapacitating and lethal agents' } },
+  { icon: FlaskConical, color: 'blue', he: { title: 'כימיה מבוססת תרופות', desc: 'ייצור ועיבוד של חומרים הגורמים לאיבוד הכרה ולמוות' }, en: { title: 'Pharmaceutical Chemistry', desc: 'Synthesis & formulation of incapacitating and lethal agents' } },
   { icon: Wind, color: 'amber', he: { title: 'הנדסת פיזור אזרחית', desc: 'הפיכת חומרים לריסוס אווירי, מנהרות רוח ומערכות הפצה' }, en: { title: 'Civilian Dispersal Engineering', desc: 'Aerosolization, wind tunnels & delivery systems' } },
   { icon: Users, color: 'purple', he: { title: 'אסטרטגיית פרוקסי אסימטרית', desc: 'העברה לחיזבאללה ומיליציות לשימוש מבצעי' }, en: { title: 'Asymmetric Proxy Strategy', desc: 'Transfer to Hezbollah & militias for operational use' } },
 ];
@@ -92,7 +92,7 @@ export default function Insights() {
       >
         <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
           {isHe
-            ? 'תוכנית ה-PBA של איראן מסמלת מעבר מנשק השמדה המונית לנשק שיתוק טקטי — כלים המיועדים לשימוש יומיומי במלחמות פרוקסי באזור האפור.'
+            ? 'תוכנית ה-PBA של איראן מסמלת מעבר מנשק השמדה המונית לנשק הגורם לאיבוד הכרה ומוות — כלים המיועדים לשימוש יומיומי במלחמות פרוקסי באזור האפור.'
             : "Iran's PBA program symbolizes a shift from WMDs to tactical incapacitation weapons — tools designed for everyday use in gray-zone proxy wars."}
         </p>
         <motion.p
