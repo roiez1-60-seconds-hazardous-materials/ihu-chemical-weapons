@@ -136,7 +136,7 @@ class TimelineAudio {
   reset() { this.played.clear(); }
 }
 
-/* ── Speech narration — simplest possible approach ── */
+/* ── Speech narration — reads the card text directly ── */
 class TimelineNarrator {
   public enabled = false;
   private narrated = new Set<string>();
@@ -146,19 +146,18 @@ class TimelineNarrator {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     this.narrated.add(id);
 
-    // Stop current speech first
     window.speechSynthesis.cancel();
 
     const utter = new SpeechSynthesisUtterance(text);
+    // Always set to user's chosen language
     utter.lang = lang === 'he' ? 'he-IL' : 'en-US';
     utter.rate = 0.9;
     utter.pitch = 0.9;
     utter.volume = 1.0;
 
-    // Find best voice
+    // Try to find matching voice
     const voices = window.speechSynthesis.getVoices();
     let voice: SpeechSynthesisVoice | undefined;
-
     if (lang === 'he') {
       voice = voices.find(v => v.lang === 'he-IL')
         || voices.find(v => v.lang.startsWith('he'))
@@ -167,13 +166,10 @@ class TimelineNarrator {
       voice = voices.find(v => v.lang === 'en-US')
         || voices.find(v => v.lang.startsWith('en'));
     }
-
     if (voice) {
       utter.voice = voice;
-      utter.lang = voice.lang;
     }
 
-    // Speak
     window.speechSynthesis.speak(utter);
 
     // Chrome keepalive
@@ -196,61 +192,12 @@ class TimelineNarrator {
 const audioEngine = typeof window !== 'undefined' ? new TimelineAudio() : null;
 const narrator = typeof window !== 'undefined' ? new TimelineNarrator() : null;
 
-// Preload voices on page load
+// Preload voices
 if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   window.speechSynthesis.getVoices();
   if (window.speechSynthesis.onvoiceschanged !== undefined) {
     window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
   }
-}
-
-// Narration scripts
-const narrationScripts: Record<string, { he: string; en: string }> = {
-  '2002': {
-    he: 'שנת 2002. בתיאטרון נורד-אוסט במוסקבה, כוחות מיוחדים רוסיים משתמשים בנגזרת פנטניל. 130 בני ערובה נהרגו. איראן לומדת את הלקח.',
-    en: '2002. At the Nord-Ost theater in Moscow, Russian special forces deploy a fentanyl derivative. 130 hostages die. Iran takes note.',
-  },
-  '2005': {
-    he: 'שנת 2005. אוניברסיטת אימאם חוסיין מתחילה לפרסם מאמרים על סינתזת פנטניל וחומרי עצב. התוכנית יוצאת לדרך.',
-    en: '2005. Imam Hossein University begins publishing research on fentanyl synthesis and nerve agent precursors. The program is born.',
-  },
-  '2014': {
-    he: 'שנת 2014. מחלקת הכימיה מנסה לרכוש אלפי מנות מדטומידין מסין. אין שום מחקר רפואי שמצדיק את זה.',
-    en: '2014. The chemistry department attempts to procure thousands of medetomidine doses from China. No medical research justifies the quantity.',
-  },
-  '2023': {
-    he: 'שנת 2023. מסמכי פרויקט הרתעה דולפים. רימוני גז טקטיים עם 40 אחוז מדטומידין. הראיה הישירה הראשונה.',
-    en: '2023. Project Deterrence documents leak. Tactical gas grenades loaded with 40 percent medetomidine. The first direct evidence.',
-  },
-  '2025': {
-    he: 'יוני 2025. צהל תוקף. מתחם שהיד מייסמי מושמד. מבנה מזרחי בקמפוס נפגע. 15 הרוגים.',
-    en: 'June 2025. The IDF strikes. Shahid Meisami complex destroyed. An eastern building on the IHU campus is hit. 15 killed.',
-  },
-  '2026': {
-    he: 'מרץ 2026. 80 מטוסי קרב ישראליים תוקפים שלוש מטרות ספציפיות בקמפוס. מרכז הכימיה. מנהרות הרוח. מרכז ההנדסה.',
-    en: 'March 2026. 80 Israeli fighter jets strike three specific campus targets. The Chemistry Center. The Wind Tunnels. The Engineering Center.',
-  },
-};
-
-/** Check if device has Hebrew TTS */
-function hasHebrewVoice(): boolean {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return false;
-  const voices = window.speechSynthesis.getVoices();
-  return voices.some(v => v.lang.startsWith('he') || v.lang.startsWith('iw'));
-}
-
-/** Get narration text — falls back to English if no Hebrew voice */
-function getNarrationText(year: string, lang: string): { text: string; actualLang: string } {
-  const script = narrationScripts[year];
-  if (!script) return { text: '', actualLang: 'en' };
-
-  if (lang === 'he' && hasHebrewVoice()) {
-    return { text: script.he, actualLang: 'he' };
-  } else if (lang === 'he' && !hasHebrewVoice()) {
-    // No Hebrew voice — use English
-    return { text: script.en, actualLang: 'en' };
-  }
-  return { text: script.en, actualLang: 'en' };
 }
 
 const eventsData: { year: string; icon: typeof Eye; colorClass: string; sound: 'blip' | 'alert' | 'boom' | 'sweep' | 'warning' | 'strike'; he: { label: string; desc: string }; en: { label: string; desc: string } }[] = [
@@ -268,6 +215,10 @@ function TimelineEvent({ ev, index, lang, narrationOn, soundOn, onActivate }: { 
   const autoPlayed = useRef(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // Build narration text from card data
+  const data = lang === 'he' ? ev.he : ev.en;
+  const narrationText = `${ev.year}. ${data.label}. ${data.desc}`;
+
   // Auto-play on scroll (only works if AudioContext already unlocked)
   useEffect(() => {
     if (isInView && !autoPlayed.current && soundOn) {
@@ -276,15 +227,12 @@ function TimelineEvent({ ev, index, lang, narrationOn, soundOn, onActivate }: { 
         audioEngine.play(ev.sound, `auto-${ev.year}`);
       }
       if (narrator && narrationOn && narrator.enabled) {
-        const script = narrationScripts[ev.year];
-        if (script) {
-          setTimeout(() => {
-            const n1 = getNarrationText(ev.year, lang); narrator.speak(n1.text, n1.actualLang, `auto-${ev.year}`);
-          }, 800);
-        }
+        setTimeout(() => {
+          narrator.speak(narrationText, lang, `auto-${ev.year}`);
+        }, 800);
       }
     }
-  }, [isInView, ev.sound, ev.year, lang, narrationOn, soundOn]);
+  }, [isInView, ev.sound, ev.year, lang, narrationOn, soundOn, narrationText]);
 
   // Manual play on card click — this is a user gesture so it unlocks audio!
   const handleClick = useCallback(() => {
@@ -294,21 +242,16 @@ function TimelineEvent({ ev, index, lang, narrationOn, soundOn, onActivate }: { 
 
     if (audioEngine) {
       audioEngine.unlock();
-      // Force play even if already played
       audioEngine.play(ev.sound, `click-${ev.year}-${Date.now()}`);
     }
     if (narrator && narrationOn) {
-      const script = narrationScripts[ev.year];
-      if (script) {
-        setTimeout(() => {
-          const n2 = getNarrationText(ev.year, lang); narrator.speak(n2.text, n2.actualLang, `click-${ev.year}-${Date.now()}`);
-        }, 600);
-      }
+      setTimeout(() => {
+        narrator.speak(narrationText, lang, `click-${ev.year}-${Date.now()}`);
+      }, 600);
     }
-  }, [ev, lang, narrationOn, onActivate]);
+  }, [ev, lang, narrationOn, onActivate, narrationText]);
 
   const Icon = ev.icon;
-  const data = lang === 'he' ? ev.he : ev.en;
 
   return (
     <motion.div
@@ -368,7 +311,6 @@ export default function Timeline() {
   const [soundOn, setSoundOn] = useState(true);
   const [narrationOn, setNarrationOn] = useState(false);
   const [isPlayingAll, setIsPlayingAll] = useState(false);
-  const [noHebrewVoice, setNoHebrewVoice] = useState(false);
 
   /** Called from user gesture to unlock AudioContext */
   const activateAudio = useCallback(() => {
@@ -388,14 +330,12 @@ export default function Timeline() {
       setTimeout(() => {
         if (audioEngine) audioEngine.play(ev.sound, `all-${ev.year}-${Date.now()}`);
         if (narrator && narrationOn) {
-          const script = narrationScripts[ev.year];
-          if (script) {
-            setTimeout(() => {
-              const n3 = getNarrationText(ev.year, lang); narrator.speak(n3.text, n3.actualLang, `all-${ev.year}-${Date.now()}`);
-            }, 600);
-          }
+          const d = lang === 'he' ? ev.he : ev.en;
+          const fullText = `${ev.year}. ${d.label}. ${d.desc}`;
+          setTimeout(() => {
+            narrator.speak(fullText, lang, `all-${ev.year}-${Date.now()}`);
+          }, 600);
         }
-        // Scroll to event
         const el = document.getElementById(`timeline-event-${ev.year}`);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, delay);
@@ -434,15 +374,9 @@ export default function Timeline() {
         setSoundOn(true);
         if (audioEngine) { audioEngine.enabled = true; audioEngine.reset(); }
       }
-      // Check if Hebrew voice exists when turning on in Hebrew mode
-      if (next && lang === 'he') {
-        setNoHebrewVoice(!hasHebrewVoice());
-      } else {
-        setNoHebrewVoice(false);
-      }
       return next;
     });
-  }, [soundOn, activateAudio, lang]);
+  }, [soundOn, activateAudio]);
 
   return (
     <section id="timeline" className="relative py-20 px-4 max-w-3xl mx-auto">
@@ -506,15 +440,6 @@ export default function Timeline() {
             ? 'לחצו על כל אירוע להשמעת צליל וקריינות בעברית, או "נגן הכל" לחוויה מלאה'
             : 'Click any event for sound & English narration, or "Play All" for the full experience'}
         </p>
-        {noHebrewVoice && narrationOn && lang === 'he' && (
-          <motion.p
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-[10px] text-amber-400 mt-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 inline-block"
-          >
-            ⚠️ לא נמצא קול עברי במכשיר — הקריינות תושמע באנגלית. להתקנת קול עברי: הגדרות → נגישות → תוכן מדובר → קולות → עברית
-          </motion.p>
-        )}
       </motion.div>
       <div className="relative">
         {/* Vertical fuse line */}
