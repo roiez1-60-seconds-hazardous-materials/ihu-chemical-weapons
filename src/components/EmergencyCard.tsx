@@ -46,7 +46,7 @@ export default function EmergencyCard() {
                 <div className="flex items-center gap-2 mb-2">
                   <Eye size={13} className="text-amber-400" />
                   <span className="text-amber-400 text-[10px] font-black tracking-wider uppercase">
-                    {h ? 'איך להבדיל \u2014 PBA מול חומר עצב' : 'HOW TO DIFFERENTIATE \u2014 PBA vs Nerve Agent'}
+                    {h ? 'הבדלה \u2014 אירוע PBA מול חומר עצב (סארין/VX)' : 'DIFFERENTIATE \u2014 PBA Event vs Nerve Agent (Sarin/VX)'}
                   </span>
                 </div>
                 <div className="overflow-x-auto">
@@ -255,6 +255,41 @@ export default function EmergencyCard() {
                       <span className="text-[10px] text-gray-300 leading-relaxed">{line}</span>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* PPE & DECONTAMINATION */}
+              <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Shield size={13} className="text-blue-400" />
+                  <span className="text-blue-400 text-[10px] font-black tracking-wider uppercase">
+                    {h ? 'מיגון ושטיפה טרם הסרת ציוד' : 'PPE & DECONTAMINATION BEFORE DOFFING'}
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {(h ? [
+                    'מיגון נדרש: SCBA + כפפות ניטריל + סרבל מגן + הגנת עיניים',
+                    'שטיפת ציוד המגן: מים + סבון (pH 8\u201310.5) במברשת רכה, מלמעלה למטה',
+                    'הסרת ציוד: גלגל את הסרבל מלמעלה למטה (לא למשוך מעל הראש). SCBA יורד אחרון',
+                    'לא להשתמש באלכוהול, אלכוג\u05F3ל, או אקונומיקה לניקוי עור \u2014 עלולים להגביר ספיגה',
+                    'מקלחת מיידית עם מים וסבון לאחר חשיפה אפשרית. לכסות פצעים פתוחים',
+                    'ציוד חד-פעמי: שקיות פוליאתילן 6 מיל, סגורות ומסומנות',
+                  ] : [
+                    'Required PPE: SCBA + nitrile gloves + protective coverall + eye protection',
+                    'Wash PPE: water + soap (pH 8\u201310.5) with soft brush, top to bottom',
+                    'Doffing: roll coverall down from head to toe (do not pull over head). SCBA removed last',
+                    'Do not use alcohol, hand sanitizer, or bleach on skin \u2014 may increase absorption',
+                    'Immediate shower with soap and water after possible exposure. Cover open wounds',
+                    'Single-use PPE: place in labeled durable 6-mil polyethylene bags',
+                  ]).map((line, i) => (
+                    <div key={i} className="flex items-start gap-1.5">
+                      <span className="text-blue-400 text-[10px] mt-0.5">{'\u2022'}</span>
+                      <span className="text-[10px] text-gray-300 leading-relaxed">{line}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-1 text-[8px] text-gray-600 font-mono">
+                  {h ? 'מקורות: NIOSH CDC Fentanyl Card, IAB PPE Recommendations, ACMT/AACT Position Statement' : 'Sources: NIOSH CDC Fentanyl Card, IAB PPE Recommendations, ACMT/AACT Position Statement'}
                 </div>
               </div>
 
