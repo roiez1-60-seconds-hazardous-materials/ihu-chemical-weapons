@@ -46,231 +46,440 @@ const platformMeta: Record<Platform, { icon: typeof Bomb; color: string; he: str
 };
 
 /* ── SVG Animations per platform ── */
+/* ── SVG Animations per platform — realistic detail ── */
 
 function GrenadeAnim({ step }: { step: number }) {
+  // Generate consistent particle positions
+  const gasParticles = Array.from({ length: 35 }, (_, i) => ({
+    cx: 180 + Math.cos(i * 0.8) * (40 + i * 3),
+    cy: 100 + Math.sin(i * 1.1) * (30 + i * 2),
+    r: 8 + (i % 7) * 4,
+    delay: i * 0.12,
+    dur: 2.5 + (i % 4) * 0.5,
+  }));
+
   return (
-    <svg viewBox="0 0 400 250" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-      {/* Room outline */}
-      <rect x="50" y="40" width="300" height="180" rx="4" fill="none" stroke="#333" strokeWidth="1.5" />
-      <text x="200" y="30" textAnchor="middle" fill="#555" fontSize="9" fontFamily="monospace">
-        {step < 2 ? 'ENCLOSED SPACE' : 'CONTAMINATED ZONE'}
-      </text>
-      {/* Door */}
-      <rect x="46" y="120" width="8" height="60" fill={step >= 1 ? '#1a1a1a' : '#333'} stroke="#444" strokeWidth="1" />
+    <svg viewBox="0 0 500 300" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="gasGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#ef4444" stopOpacity="0.12" />
+          <stop offset="70%" stopColor="#ef4444" stopOpacity="0.04" />
+          <stop offset="100%" stopColor="#ef4444" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="floorGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#1a1a22" />
+          <stop offset="100%" stopColor="#111118" />
+        </linearGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+      </defs>
 
-      {/* Person throwing (steps 0-1) */}
+      {/* Room — concrete walls with texture */}
+      <rect x="60" y="30" width="380" height="230" fill="#0e0e14" />
+      <rect x="60" y="30" width="380" height="230" fill="none" stroke="#2a2a35" strokeWidth="3" />
+      {/* Floor */}
+      <rect x="60" y="200" width="380" height="60" fill="url(#floorGrad)" />
+      {/* Floor line */}
+      <line x1="60" y1="200" x2="440" y2="200" stroke="#2a2a35" strokeWidth="0.5" />
+      {/* Ceiling light */}
+      <rect x="230" y="32" width="40" height="4" fill="#222" rx="1" />
+      <motion.line x1="250" y1="36" x2="250" y2="36" stroke={step >= 3 ? '#ef444440' : '#ffff0015'} strokeWidth="60"
+        animate={{ opacity: step >= 3 ? [0.05, 0.15, 0.05] : 0.03 }}
+        transition={{ duration: 2, repeat: Infinity }} />
+
+      {/* Door (left wall) */}
+      <rect x="56" y="90" width="8" height="110" fill="#1e1e28" stroke="#333" strokeWidth="1" rx="1" />
+      <circle cx="62" cy="145" r="1.5" fill="#555" />
+      {/* Window (right wall) with bars */}
+      <rect x="430" y="70" width="8" height="60" fill="#0a0a12" stroke="#333" strokeWidth="1" />
+      {[80, 95, 110, 125].map((y, i) => <line key={i} x1="430" y1={y} x2="438" y2={y} stroke="#33333380" strokeWidth="0.5" />)}
+
+      {/* Table in room */}
+      <rect x="200" y="165" width="80" height="3" fill="#252530" rx="1" />
+      <line x1="210" y1="168" x2="210" y2="198" stroke="#252530" strokeWidth="2" />
+      <line x1="270" y1="168" x2="270" y2="198" stroke="#252530" strokeWidth="2" />
+      {/* Chairs */}
+      <rect x="185" y="175" width="12" height="12" fill="none" stroke="#222" strokeWidth="1" rx="1" />
+      <rect x="285" y="175" width="12" height="12" fill="none" stroke="#222" strokeWidth="1" rx="1" />
+
+      {/* Operator outside door (steps 0-1) */}
       {step <= 1 && (
-        <g>
-          <circle cx="30" cy="145" r="6" fill="#666" />
-          <line x1="30" y1="151" x2="30" y2="172" stroke="#666" strokeWidth="2" />
-          <motion.line x1="30" y1="157" x2={step === 1 ? 50 : 38} y2={step === 1 ? 140 : 162} stroke="#666" strokeWidth="2"
-            animate={{ x2: step === 1 ? 50 : 38, y2: step === 1 ? 140 : 162 }} />
-        </g>
-      )}
-
-      {/* Grenade trajectory (step 1) */}
-      {step === 1 && (
-        <motion.circle cx="55" cy="145" r="4" fill={platformMeta.grenade.color}
-          animate={{ cx: [55, 120, 200], cy: [145, 100, 130] }}
-          transition={{ duration: 1, ease: 'easeOut' }} />
-      )}
-
-      {/* Grenade on ground (step 2+) */}
-      {step >= 2 && (
-        <motion.g animate={step === 2 ? { scale: [1, 1.3, 1] } : {}} transition={{ duration: 0.5, repeat: step === 2 ? 2 : 0 }}>
-          <rect x="195" y="126" width="10" height="15" rx="2" fill="#1a1a2e" stroke={platformMeta.grenade.color} strokeWidth="1.5" />
+        <motion.g animate={step === 1 ? { opacity: [1, 0.5] } : {}} transition={{ duration: 0.5 }}>
+          {/* Head */}
+          <circle cx="35" cy="120" r="7" fill="#3a3a45" />
+          {/* Helmet */}
+          <path d="M 28 118 Q 35 108 42 118" fill="#2a2a35" stroke="#444" strokeWidth="0.5" />
+          {/* Body — tactical vest */}
+          <rect x="28" y="127" width="14" height="22" fill="#2a2a35" rx="2" />
+          <line x1="35" y1="127" x2="35" y2="149" stroke="#3a3a45" strokeWidth="0.5" />
+          {/* Legs */}
+          <line x1="31" y1="149" x2="30" y2="170" stroke="#2a2a35" strokeWidth="3" />
+          <line x1="39" y1="149" x2="40" y2="170" stroke="#2a2a35" strokeWidth="3" />
+          {/* Arm throwing */}
+          <motion.line x1="42" y1="133" x2={step === 1 ? 58 : 48} y2={step === 1 ? 118 : 142} stroke="#3a3a45" strokeWidth="2.5"
+            animate={{ x2: step === 1 ? 58 : 48, y2: step === 1 ? 118 : 142 }} transition={{ duration: 0.4 }} />
+          {/* Gas mask */}
+          <ellipse cx="35" cy="124" rx="5" ry="4" fill="none" stroke="#555" strokeWidth="0.8" />
         </motion.g>
       )}
 
-      {/* Gas cloud expanding (steps 3+) */}
-      {step >= 3 && (
-        <>
-          {[
-            { cx: 200, cy: 120, delay: 0 },
-            { cx: 160, cy: 100, delay: 0.3 },
-            { cx: 240, cy: 110, delay: 0.2 },
-            { cx: 180, cy: 145, delay: 0.5 },
-            { cx: 230, cy: 140, delay: 0.4 },
-            { cx: 140, cy: 130, delay: 0.7 },
-            { cx: 260, cy: 125, delay: 0.6 },
-            { cx: 200, cy: 160, delay: 0.8 },
-          ].map((c, i) => (
-            <motion.circle key={i} cx={c.cx} cy={c.cy} r="0" fill={`${platformMeta.grenade.color}08`} stroke={`${platformMeta.grenade.color}15`} strokeWidth="0.5"
-              animate={{ r: [0, 20 + i * 5, 15 + i * 5], opacity: [0, 0.6, 0.3] }}
-              transition={{ duration: 2, delay: c.delay, repeat: Infinity, repeatType: 'reverse' }} />
-          ))}
-        </>
+      {/* Grenade in flight (step 1) */}
+      {step === 1 && (
+        <motion.g animate={{ x: [0, 80, 160], y: [0, -40, 10] }} transition={{ duration: 1.2, ease: 'easeOut' }}>
+          <rect x="58" y="116" width="7" height="11" rx="2" fill="#2a2a35" stroke="#ef4444" strokeWidth="1" />
+          <rect x="60" y="112" width="3" height="5" rx="1" fill="#333" />
+        </motion.g>
       )}
 
-      {/* People inside (steps 4+: collapsing) */}
-      {step >= 0 && [
-        { x: 130, y: 170 }, { x: 200, y: 180 }, { x: 270, y: 165 }, { x: 170, y: 195 }, { x: 240, y: 190 },
-      ].map((p, i) => (
-        <g key={i}>
-          <circle cx={p.x} cy={step >= 5 ? p.y + 15 : p.y - 20} r="5"
-            fill={step >= 4 ? '#8b0000' : '#666'} opacity={step < 2 ? 1 : 0.7} />
-          {step < 5 && <line x1={p.x} y1={p.y - 14} x2={p.x} y2={p.y + 5} stroke={step >= 4 ? '#8b0000' : '#666'} strokeWidth="1.5" />}
-          {step >= 5 && (
-            <motion.line x1={p.x - 8} y1={p.y + 13} x2={p.x + 8} y2={p.y + 17}
-              stroke="#8b0000" strokeWidth="1.5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
+      {/* Grenade on floor (step 2+) */}
+      {step >= 2 && (
+        <motion.g animate={step === 2 ? { scale: [1, 1.15, 1] } : {}} transition={{ duration: 0.3, repeat: step === 2 ? 3 : 0 }}>
+          <rect x="216" y="192" width="8" height="12" rx="2" fill="#1a1a2e" stroke="#ef4444" strokeWidth="1.2" />
+          {step >= 2 && (
+            <motion.circle cx="220" cy="195" r="3" fill="#ef4444" filter="url(#glow)"
+              animate={{ r: [3, 8, 3], opacity: [0.8, 0.2, 0.8] }} transition={{ duration: 0.6, repeat: Infinity }} />
           )}
-        </g>
+        </motion.g>
+      )}
+
+      {/* Gas cloud — many layered particles (step 3+) */}
+      {step >= 3 && gasParticles.map((p, i) => (
+        <motion.circle key={i} cx={p.cx} cy={p.cy} r="0"
+          fill="url(#gasGrad)" stroke={`rgba(239,68,68,${0.04 + (i % 3) * 0.02})`} strokeWidth="0.3"
+          animate={{ r: [0, p.r, p.r * 0.8], opacity: [0, 0.5, 0.2] }}
+          transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, repeatType: 'reverse' }} />
       ))}
 
-      {/* Radius indicator (step 3+) */}
-      {step >= 3 && (
-        <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <line x1="140" y1="210" x2="260" y2="210" stroke={platformMeta.grenade.color} strokeWidth="0.8" strokeDasharray="3 2" opacity="0.5" />
-          <text x="200" y="225" textAnchor="middle" fill={platformMeta.grenade.color} fontSize="8" fontFamily="monospace" opacity="0.7">5-8m</text>
-        </motion.g>
+      {/* Haze overlay (step 4+) */}
+      {step >= 4 && (
+        <motion.rect x="60" y="30" width="380" height="230" fill="#ef4444"
+          initial={{ opacity: 0 }} animate={{ opacity: [0, 0.04, 0.02] }}
+          transition={{ duration: 3, repeat: Infinity }} />
+      )}
+
+      {/* People inside — detailed silhouettes */}
+      {[
+        { x: 140, y: 170, role: 'standing' },
+        { x: 240, y: 175, role: 'sitting' },
+        { x: 310, y: 168, role: 'standing' },
+        { x: 180, y: 180, role: 'sitting' },
+        { x: 360, y: 172, role: 'standing' },
+      ].map((p, i) => {
+        const affected = step >= 4;
+        const collapsed = step >= 5;
+        const color = affected ? '#8b0000' : '#4a4a55';
+        return (
+          <motion.g key={i}
+            animate={collapsed ? { y: 15, rotate: 70 + i * 10, opacity: 0.6 } : affected ? { y: [0, 3, 0] } : {}}
+            transition={collapsed ? { duration: 0.8, delay: i * 0.15 } : { duration: 2, repeat: Infinity, delay: i * 0.3 }}
+            style={{ transformOrigin: `${p.x}px ${p.y + 20}px` }}
+          >
+            <circle cx={p.x} cy={p.y - 12} r="5" fill={color} />
+            <line x1={p.x} y1={p.y - 7} x2={p.x} y2={p.y + 12} stroke={color} strokeWidth="2" strokeLinecap="round" />
+            {p.role === 'standing' && <>
+              <line x1={p.x} y1={p.y + 12} x2={p.x - 5} y2={p.y + 28} stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+              <line x1={p.x} y1={p.y + 12} x2={p.x + 5} y2={p.y + 28} stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+            </>}
+            <line x1={p.x} y1={p.y - 2} x2={p.x - 7} y2={p.y + 5} stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+            <line x1={p.x} y1={p.y - 2} x2={p.x + 7} y2={p.y + 5} stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+          </motion.g>
+        );
+      })}
+
+      {/* Timer overlay (step 4) */}
+      {step === 4 && (
+        <motion.text x="420" y="55" textAnchor="end" fill="#ef4444" fontSize="10" fontFamily="monospace" fontWeight="bold"
+          animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1, repeat: Infinity }}>
+          60-90 sec
+        </motion.text>
       )}
     </svg>
   );
 }
 
 function DroneAnim({ step }: { step: number }) {
-  const droneY = step === 0 ? 200 : step === 1 ? 60 : 55;
-  const droneX = step <= 1 ? 80 : step === 2 ? 200 : 200;
+  const droneTargetX = step <= 1 ? 70 : 250;
+  const droneTargetY = step === 0 ? 200 : step === 1 ? 45 : 40;
+
+  const dispersalParticles = Array.from({ length: 30 }, (_, i) => ({
+    cx: 250 + Math.cos(i * 0.7) * (30 + i * 4),
+    cy: 180 + Math.sin(i * 0.9) * 15 - i * 0.5,
+    r: 6 + (i % 5) * 3,
+    delay: i * 0.15,
+  }));
 
   return (
-    <svg viewBox="0 0 400 250" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-      {/* Sky gradient */}
-      <rect width="400" height="250" fill="#0a0a14" />
-      {/* Ground */}
-      <rect x="0" y="200" width="400" height="50" fill="#111" stroke="#222" strokeWidth="0.5" />
-      {/* Target area on ground */}
-      <ellipse cx="200" cy="210" rx="60" ry="8" fill="none" stroke="#333" strokeWidth="0.5" strokeDasharray="4 3" />
-      {step >= 2 && <text x="200" y="230" textAnchor="middle" fill="#555" fontSize="8" fontFamily="monospace">TARGET ZONE</text>}
+    <svg viewBox="0 0 500 300" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#050510" />
+          <stop offset="100%" stopColor="#0a0a18" />
+        </linearGradient>
+        <radialGradient id="droneCloud" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.1" />
+          <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+        </radialGradient>
+      </defs>
 
-      {/* People on ground */}
-      {[160, 180, 200, 220, 240].map((x, i) => (
-        <g key={i}>
-          <circle cx={x} cy={step >= 5 ? 215 : 200} r="3" fill={step >= 5 ? '#8b0000' : '#555'} />
-          {step < 5 && <line x1={x} y1={203} x2={x} y2={210} stroke="#555" strokeWidth="1" />}
-        </g>
+      {/* Sky */}
+      <rect width="500" height="300" fill="url(#skyGrad)" />
+      {/* Stars */}
+      {[{x:50,y:20},{x:120,y:45},{x:380,y:30},{x:420,y:65},{x:200,y:15},{x:300,y:50},{x:460,y:25}].map((s,i) => (
+        <motion.circle key={i} cx={s.x} cy={s.y} r="0.8" fill="white"
+          animate={{ opacity: [0.3, 0.8, 0.3] }} transition={{ duration: 2 + i * 0.5, repeat: Infinity, delay: i * 0.3 }} />
       ))}
 
-      {/* Drone */}
-      <motion.g animate={{ x: droneX - 80, y: droneY - 200 }} transition={{ duration: 1.5, ease: 'easeInOut' }}>
-        {/* Body */}
-        <rect x="72" y="195" width="16" height="8" rx="2" fill="#1a1a2e" stroke="#3b82f6" strokeWidth="1" />
-        {/* Arms */}
-        <line x1="72" y1="198" x2="60" y2="192" stroke="#3b82f680" strokeWidth="1.5" />
-        <line x1="88" y1="198" x2="100" y2="192" stroke="#3b82f680" strokeWidth="1.5" />
-        {/* Rotors */}
-        <motion.ellipse cx="60" cy="190" rx="10" ry="2" fill="none" stroke="#3b82f640" strokeWidth="0.8"
-          animate={{ ry: [2, 4, 2] }} transition={{ duration: 0.3, repeat: Infinity }} />
-        <motion.ellipse cx="100" cy="190" rx="10" ry="2" fill="none" stroke="#3b82f640" strokeWidth="0.8"
-          animate={{ ry: [2, 4, 2] }} transition={{ duration: 0.3, repeat: Infinity, delay: 0.15 }} />
-        {/* Payload */}
-        {step < 3 && <rect x="76" y="203" width="8" height="6" rx="1" fill="#1a1a2e" stroke="#ef444480" strokeWidth="0.8" />}
+      {/* Ground with texture */}
+      <rect x="0" y="220" width="500" height="80" fill="#111116" />
+      <line x1="0" y1="220" x2="500" y2="220" stroke="#1a1a22" strokeWidth="1" />
+      {/* Ground texture lines */}
+      {[230, 245, 260, 275].map((y, i) => (
+        <line key={i} x1="0" y1={y} x2="500" y2={y} stroke="#13131a" strokeWidth="0.3" />
+      ))}
+
+      {/* Buildings on ground */}
+      <rect x="140" y="195" width="30" height="25" fill="#131320" stroke="#1e1e2a" strokeWidth="0.5" />
+      <rect x="180" y="200" width="20" height="20" fill="#111118" stroke="#1a1a25" strokeWidth="0.5" />
+      <rect x="320" y="198" width="25" height="22" fill="#121220" stroke="#1c1c28" strokeWidth="0.5" />
+      {/* Windows on buildings */}
+      {[[145,200],[152,200],[145,208],[152,208],[325,203],[332,203]].map(([x,y],i) => (
+        <rect key={i} x={x} y={y} width="3" height="3" fill="#1a1a28" />
+      ))}
+
+      {/* Target zone on ground */}
+      {step >= 2 && (
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: 0.5 }}>
+          <ellipse cx="250" cy="225" rx="50" ry="6" fill="none" stroke="#ef4444" strokeWidth="0.8" strokeDasharray="5 3" />
+          <ellipse cx="250" cy="225" rx="30" ry="4" fill="none" stroke="#ef4444" strokeWidth="0.5" strokeDasharray="3 3" />
+          <line x1="248" y1="219" x2="252" y2="231" stroke="#ef444460" strokeWidth="0.5" />
+          <line x1="244" y1="225" x2="256" y2="225" stroke="#ef444460" strokeWidth="0.5" />
+        </motion.g>
+      )}
+
+      {/* People on ground */}
+      {[210, 230, 250, 270, 290].map((x, i) => {
+        const hit = step >= 5;
+        const col = hit ? '#8b0000' : '#3a3a48';
+        return (
+          <motion.g key={i} animate={hit ? { y: 10, opacity: 0.5 } : {}} transition={{ duration: 0.6, delay: i * 0.1 }}>
+            <circle cx={x} cy={212} r="3" fill={col} />
+            <line x1={x} y1={215} x2={x} y2={224} stroke={col} strokeWidth="1.5" strokeLinecap="round" />
+            {!hit && <>
+              <line x1={x} y1={224} x2={x-3} y2={232} stroke={col} strokeWidth="1.2" />
+              <line x1={x} y1={224} x2={x+3} y2={232} stroke={col} strokeWidth="1.2" />
+            </>}
+          </motion.g>
+        );
+      })}
+
+      {/* Drone — detailed */}
+      <motion.g animate={{ x: droneTargetX - 70, y: droneTargetY - 200 }} transition={{ duration: 1.8, ease: 'easeInOut' }}>
+        {/* Central body */}
+        <rect x="62" y="196" width="16" height="8" rx="3" fill="#1a1a2e" stroke="#3b82f6" strokeWidth="1" />
+        {/* Camera lens */}
+        <circle cx="70" cy="204" r="2.5" fill="#0a0a14" stroke="#3b82f680" strokeWidth="0.8" />
+        <motion.circle cx="70" cy="204" r="1" fill="#3b82f6" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1, repeat: Infinity }} />
+        {/* Arms — X shape */}
+        <line x1="62" y1="198" x2="48" y2="190" stroke="#3b82f650" strokeWidth="2" strokeLinecap="round" />
+        <line x1="78" y1="198" x2="92" y2="190" stroke="#3b82f650" strokeWidth="2" strokeLinecap="round" />
+        <line x1="62" y1="202" x2="48" y2="210" stroke="#3b82f650" strokeWidth="2" strokeLinecap="round" />
+        <line x1="78" y1="202" x2="92" y2="210" stroke="#3b82f650" strokeWidth="2" strokeLinecap="round" />
+        {/* Motors */}
+        {[[48,190],[92,190],[48,210],[92,210]].map(([mx,my],i) => (
+          <g key={i}>
+            <circle cx={mx} cy={my} r="4" fill="#1a1a2e" stroke="#3b82f640" strokeWidth="0.8" />
+            <motion.ellipse cx={mx} cy={my} rx="10" ry="2" fill="none" stroke="#3b82f625" strokeWidth="0.6"
+              animate={{ ry: [2, 4, 2], opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 0.2, repeat: Infinity, delay: i * 0.05 }} />
+          </g>
+        ))}
+        {/* LED lights */}
+        <motion.circle cx="62" cy="200" r="1" fill="#22c55e" animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 0.8, repeat: Infinity }} />
+        <motion.circle cx="78" cy="200" r="1" fill="#ef4444" animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 0.8, repeat: Infinity, delay: 0.4 }} />
+        {/* Payload underneath */}
+        {step < 3 && (
+          <rect x="65" y="205" width="10" height="7" rx="1.5" fill="#1a1a2e" stroke="#ef444460" strokeWidth="0.8" />
+        )}
       </motion.g>
 
       {/* Payload dropping (step 3) */}
       {step === 3 && (
-        <motion.rect x="196" y="60" width="8" height="6" rx="1" fill="#ef4444" stroke="#ef444480"
-          animate={{ y: [60, 190], opacity: [1, 0.5] }} transition={{ duration: 1.5 }} />
-      )}
-
-      {/* Dispersal cloud (steps 4+) */}
-      {step >= 4 && (
-        <>
-          {[
-            { cx: 200, cy: 190, r: 15 }, { cx: 180, cy: 185, r: 12 }, { cx: 220, cy: 188, r: 13 },
-            { cx: 160, cy: 192, r: 10 }, { cx: 240, cy: 195, r: 11 }, { cx: 200, cy: 180, r: 18 },
-            { cx: 170, cy: 195, r: 14 }, { cx: 230, cy: 190, r: 12 },
-          ].map((c, i) => (
-            <motion.circle key={i} cx={c.cx} cy={c.cy} r="0" fill={`${platformMeta.drone.color}06`} stroke={`${platformMeta.drone.color}12`} strokeWidth="0.5"
-              animate={{ r: [0, c.r + 10, c.r + 5], opacity: [0, 0.5, 0.25] }}
-              transition={{ duration: 3, delay: i * 0.15, repeat: Infinity, repeatType: 'reverse' }} />
-          ))}
-        </>
-      )}
-
-      {/* Altitude indicator */}
-      {step >= 1 && step <= 3 && (
-        <motion.g initial={{ opacity: 0 }} animate={{ opacity: 0.5 }}>
-          <line x1="350" y1="55" x2="350" y2="200" stroke="#3b82f640" strokeWidth="0.5" strokeDasharray="3 3" />
-          <text x="360" y="130" fill="#3b82f6" fontSize="7" fontFamily="monospace">50m</text>
+        <motion.g animate={{ y: [0, 170], opacity: [1, 0.4] }} transition={{ duration: 1.5, ease: 'easeIn' }}>
+          <rect x="247" y="48" width="6" height="8" rx="1" fill="#ef4444" stroke="#ef444480" strokeWidth="0.5" />
+          {/* Fins */}
+          <line x1="247" y1="54" x2="244" y2="56" stroke="#ef444480" strokeWidth="0.8" />
+          <line x1="253" y1="54" x2="256" y2="56" stroke="#ef444480" strokeWidth="0.8" />
         </motion.g>
+      )}
+
+      {/* Chemical cloud dispersal (step 4+) */}
+      {step >= 4 && dispersalParticles.map((p, i) => (
+        <motion.circle key={i} cx={p.cx} cy={p.cy} r="0" fill="url(#droneCloud)" stroke="#3b82f608" strokeWidth="0.3"
+          animate={{ r: [0, p.r + 8, p.r + 4], opacity: [0, 0.5, 0.2], cy: [p.cy - 10, p.cy + 5, p.cy] }}
+          transition={{ duration: 3, delay: p.delay, repeat: Infinity, repeatType: 'reverse' }} />
+      ))}
+
+      {/* Altitude line */}
+      {step >= 1 && step <= 3 && (
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: 0.3 }}>
+          <line x1="470" y1="45" x2="470" y2="220" stroke="#3b82f640" strokeWidth="0.5" strokeDasharray="4 4" />
+          <text x="480" y="135" fill="#3b82f6" fontSize="8" fontFamily="monospace">50m</text>
+          <line x1="466" y1="45" x2="474" y2="45" stroke="#3b82f640" strokeWidth="0.5" />
+          <line x1="466" y1="220" x2="474" y2="220" stroke="#3b82f640" strokeWidth="0.5" />
+        </motion.g>
+      )}
+
+      {/* Range indicator (step 2+) */}
+      {step >= 2 && (
+        <motion.text x="250" y="248" textAnchor="middle" fill="#3b82f650" fontSize="8" fontFamily="monospace"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          10km RANGE
+        </motion.text>
       )}
     </svg>
   );
 }
 
 function FogAnim({ step }: { step: number }) {
-  return (
-    <svg viewBox="0 0 400 250" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-      {/* Ground */}
-      <rect width="400" height="250" fill="#0a0a14" />
-      <rect x="0" y="190" width="400" height="60" fill="#111" />
+  const fogParticles = Array.from({ length: step >= 4 ? 45 : step >= 3 ? 25 : step >= 2 ? 10 : 0 }, (_, i) => ({
+    cx: 130 + i * 8 + Math.sin(i * 0.7) * 20,
+    cy: 120 + Math.cos(i * 1.3) * 40,
+    r: 10 + (i % 6) * 5,
+    delay: i * 0.12,
+    drift: 8 + (i % 4) * 3,
+  }));
 
-      {/* Truck */}
+  return (
+    <svg viewBox="0 0 500 300" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#151520" />
+          <stop offset="100%" stopColor="#0e0e16" />
+        </linearGradient>
+        <radialGradient id="fogGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.08" />
+          <stop offset="60%" stopColor="#f59e0b" stopOpacity="0.03" />
+          <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
+      {/* Sky */}
+      <rect width="500" height="300" fill="#0a0a14" />
+      {/* Ground */}
+      <rect x="0" y="210" width="500" height="90" fill="url(#groundGrad)" />
+      <line x1="0" y1="210" x2="500" y2="210" stroke="#1e1e28" strokeWidth="0.5" />
+      {/* Road */}
+      <rect x="0" y="215" width="500" height="30" fill="#12121a" />
+      <line x1="0" y1="230" x2="500" y2="230" stroke="#2a2a3520" strokeWidth="1" strokeDasharray="15 10" />
+
+      {/* Trees/vegetation */}
+      {[280, 340, 400, 450].map((x, i) => (
+        <g key={i}>
+          <line x1={x} y1={210} x2={x} y2={195 - i * 2} stroke="#1a2a18" strokeWidth="2" />
+          <circle cx={x} cy={190 - i * 2} r={6 + i} fill="#152215" />
+        </g>
+      ))}
+
+      {/* Truck — detailed */}
       <g>
-        <rect x="30" y="160" width="70" height="28" rx="2" fill="#1a1a2e" stroke="#f59e0b60" strokeWidth="1.2" />
-        <rect x="30" y="155" width="25" height="33" rx="2" fill="#1a1a2e" stroke="#f59e0b80" strokeWidth="1.2" />
-        <circle cx="45" cy="192" r="6" fill="#1a1a2e" stroke="#f59e0b50" strokeWidth="1.2" />
-        <circle cx="85" cy="192" r="6" fill="#1a1a2e" stroke="#f59e0b50" strokeWidth="1.2" />
-        {/* Nozzle */}
-        <rect x="100" y="158" width="15" height="12" rx="2" fill="#1a1a2e" stroke="#f59e0b80" strokeWidth="1" />
+        {/* Cab */}
+        <rect x="25" y="185" width="35" height="28" rx="3" fill="#1a1a2e" stroke="#f59e0b50" strokeWidth="1.2" />
+        {/* Windshield */}
+        <rect x="28" y="188" width="15" height="12" rx="1" fill="#0e0e18" stroke="#f59e0b30" strokeWidth="0.5" />
+        {/* Headlight */}
+        <motion.rect x="57" y="200" width="4" height="3" rx="1" fill={step >= 0 ? '#f59e0b40' : '#222'}
+          animate={step >= 1 ? { fill: ['#f59e0b20', '#f59e0b60', '#f59e0b20'] } : {}}
+          transition={{ duration: 1, repeat: Infinity }} />
+        {/* Truck bed */}
+        <rect x="25" y="183" width="80" height="30" rx="2" fill="#15151e" stroke="#f59e0b40" strokeWidth="1" />
+        {/* Tank on bed */}
+        <ellipse cx="75" cy="190" rx="25" ry="8" fill="#1a1a28" stroke="#f59e0b30" strokeWidth="0.8" />
+        <text x="75" y="193" textAnchor="middle" fill="#f59e0b20" fontSize="5" fontFamily="monospace">AGENT</text>
+        {/* Nozzle apparatus */}
+        <rect x="100" y="180" width="20" height="18" rx="2" fill="#15151e" stroke="#f59e0b50" strokeWidth="1" />
+        <rect x="118" y="184" width="8" height="10" rx="3" fill="#1a1a28" stroke="#f59e0b60" strokeWidth="1" />
+        {/* Nozzle opening — glows when active */}
         {step >= 1 && (
-          <motion.circle cx="115" cy="164" r="3" fill="#f59e0b60"
-            animate={{ r: [3, 5, 3], opacity: [0.3, 0.8, 0.3] }} transition={{ duration: 1, repeat: Infinity }} />
+          <motion.circle cx="126" cy="189" r="4" fill="#f59e0b" filter="url(#glow)"
+            animate={{ r: [3, 6, 3], opacity: [0.3, 0.8, 0.3] }} transition={{ duration: 0.8, repeat: Infinity }} />
         )}
+        {/* Wheels */}
+        {[40, 90].map((wx, i) => (
+          <g key={i}>
+            <circle cx={wx} cy="215" r="7" fill="#0e0e14" stroke="#2a2a35" strokeWidth="1.5" />
+            <circle cx={wx} cy="215" r="3" fill="#1a1a25" />
+            <circle cx={wx} cy="215" r="1" fill="#333" />
+          </g>
+        ))}
       </g>
 
-      {/* Wind arrow */}
-      {step >= 3 && (
-        <motion.g initial={{ opacity: 0 }} animate={{ opacity: 0.4 }}>
-          <line x1="150" y1="40" x2="300" y2="40" stroke="#f59e0b" strokeWidth="1" />
-          <polygon points="300,36 310,40 300,44" fill="#f59e0b" />
-          <text x="225" y="35" textAnchor="middle" fill="#f59e0b" fontSize="8" fontFamily="monospace">WIND</text>
+      {/* Spray jet from nozzle (step 2+) */}
+      {step >= 2 && (
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          {[0, 1, 2].map(i => (
+            <motion.line key={i} x1="130" y1={186 + i * 3} x2="160" y2={175 + i * 8} stroke="#f59e0b15" strokeWidth={2 - i * 0.5}
+              animate={{ x2: [150, 170, 150], opacity: [0.2, 0.5, 0.2] }}
+              transition={{ duration: 1.5, delay: i * 0.2, repeat: Infinity }} />
+          ))}
         </motion.g>
       )}
 
-      {/* Fog cloud — progressively expanding */}
-      {step >= 2 && (
-        <>
-          {Array.from({ length: step >= 4 ? 20 : step >= 3 ? 12 : 5 }).map((_, i) => {
-            const cx = 120 + i * 15 + Math.sin(i) * 20;
-            const cy = 140 + Math.cos(i * 2) * 25;
-            const r = 12 + (i % 5) * 4;
-            return (
-              <motion.circle key={i} cx={cx} cy={cy} r="0" fill={`${platformMeta.fog.color}04`} stroke={`${platformMeta.fog.color}08`} strokeWidth="0.3"
-                animate={{ r: [0, r, r - 3], opacity: [0, 0.4, 0.2], cx: [cx, cx + 10, cx + 15] }}
-                transition={{ duration: 4, delay: i * 0.2, repeat: Infinity, repeatType: 'reverse' }} />
-            );
-          })}
-        </>
+      {/* Wind direction (step 3+) */}
+      {step >= 3 && (
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: 0.5 }}>
+          {[0, 1, 2].map(i => (
+            <motion.g key={i} animate={{ x: [0, 15, 0] }} transition={{ duration: 2, delay: i * 0.3, repeat: Infinity }}>
+              <line x1={180 + i * 40} y1={55 + i * 5} x2={220 + i * 40} y2={55 + i * 5} stroke="#f59e0b40" strokeWidth="0.8" />
+              <polygon points={`${220 + i * 40},${52 + i * 5} ${228 + i * 40},${55 + i * 5} ${220 + i * 40},${58 + i * 5}`} fill="#f59e0b40" />
+            </motion.g>
+          ))}
+          <text x="250" y="45" textAnchor="middle" fill="#f59e0b" fontSize="9" fontFamily="monospace" opacity="0.5">WIND →</text>
+        </motion.g>
+      )}
+
+      {/* Fog cloud — layered particles drifting with wind */}
+      {fogParticles.map((p, i) => (
+        <motion.circle key={i} cx={p.cx} cy={p.cy} r="0" fill="url(#fogGrad)" stroke="#f59e0b05" strokeWidth="0.2"
+          animate={{ r: [0, p.r, p.r * 0.7], opacity: [0, 0.4, 0.15], cx: [p.cx, p.cx + p.drift, p.cx + p.drift * 1.5] }}
+          transition={{ duration: 4, delay: p.delay, repeat: Infinity, repeatType: 'reverse' }} />
+      ))}
+
+      {/* Haze overlay (step 4+) */}
+      {step >= 4 && (
+        <motion.rect x="120" y="80" width="380" height="150" fill="#f59e0b" rx="20"
+          initial={{ opacity: 0 }} animate={{ opacity: [0, 0.03, 0.01] }}
+          transition={{ duration: 4, repeat: Infinity }} />
       )}
 
       {/* People at various distances */}
-      {[150, 200, 250, 300, 340].map((x, i) => {
-        const affected = step >= 5 && x < 300;
-        const falling = step >= 5 && x < 260;
+      {[180, 240, 300, 360, 420].map((x, i) => {
+        const affected = step >= 5 && x < 380;
+        const col = affected ? '#8b0000' : '#4a4a55';
         return (
-          <g key={i}>
-            <circle cx={x} cy={falling ? 195 : 180} r="3" fill={affected ? '#8b0000' : '#555'} />
-            {!falling && <line x1={x} y1={183} x2={x} y2={192} stroke={affected ? '#8b0000' : '#555'} strokeWidth="1" />}
-          </g>
+          <motion.g key={i} animate={affected ? { y: 8, opacity: 0.5 } : {}} transition={{ duration: 0.5, delay: i * 0.12 }}>
+            <circle cx={x} cy={200} r="3.5" fill={col} />
+            <line x1={x} y1={203} x2={x} y2={213} stroke={col} strokeWidth="1.5" strokeLinecap="round" />
+            {!affected && <>
+              <line x1={x} y1={213} x2={x-4} y2={222} stroke={col} strokeWidth="1.2" />
+              <line x1={x} y1={213} x2={x+4} y2={222} stroke={col} strokeWidth="1.2" />
+            </>}
+          </motion.g>
         );
       })}
 
       {/* Distance markers */}
       {step >= 3 && (
         <motion.g initial={{ opacity: 0 }} animate={{ opacity: 0.4 }}>
-          {[150, 250, 350].map((x, i) => (
+          {[[180, '50m'], [280, '150m'], [380, '300m']].map(([x, label], i) => (
             <g key={i}>
-              <line x1={x} y1="200" x2={x} y2="208" stroke="#f59e0b" strokeWidth="0.5" />
-              <text x={x} y="218" textAnchor="middle" fill="#f59e0b" fontSize="7" fontFamily="monospace">{(i + 1) * 100}m</text>
+              <line x1={x as number} y1="250" x2={x as number} y2="258" stroke="#f59e0b" strokeWidth="0.5" />
+              <text x={x as number} y="268" textAnchor="middle" fill="#f59e0b" fontSize="7" fontFamily="monospace">{label as string}</text>
             </g>
           ))}
+          <line x1="130" y1="254" x2="430" y2="254" stroke="#f59e0b20" strokeWidth="0.5" />
         </motion.g>
       )}
     </svg>
   );
 }
-
 const animations: Record<Platform, React.FC<{ step: number }>> = {
   grenade: GrenadeAnim,
   drone: DroneAnim,
