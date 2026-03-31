@@ -12,6 +12,7 @@ import Platforms from '@/components/Platforms';
 import Simulation from '@/components/Simulation';
 import Strikes from '@/components/Strikes';
 import HazMat from '@/components/HazMat';
+import EmergencyCard from '@/components/EmergencyCard';
 import Glossary from '@/components/Glossary';
 import Gallery from '@/components/Gallery';
 import Sources from '@/components/Sources';
@@ -50,6 +51,8 @@ export default function Home() {
         <Strikes />
         <Divider />
         <HazMat />
+        <Divider />
+        <EmergencyCard />
         <Divider />
         <Gallery />
         <Divider />
