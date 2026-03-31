@@ -1,7 +1,7 @@
 'use client';
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Flame, Eye, ShoppingCart, FileWarning, Bomb, Crosshair, Volume2, VolumeX } from 'lucide-react';
+import { Flame, Eye, ShoppingCart, FileWarning, Bomb, Crosshair, Volume2, VolumeX, Mic, MicOff } from 'lucide-react';
 import { useLang } from '@/lib/LanguageContext';
 
 /* ── Web Audio API sound generator ── */
@@ -128,7 +128,75 @@ class TimelineAudio {
   reset() { this.played.clear(); }
 }
 
+/* ── Speech narration using Web Speech API ── */
+class TimelineNarrator {
+  public enabled = true;
+  private narrated = new Set<string>();
+
+  speak(text: string, lang: string, id: string) {
+    if (!this.enabled || this.narrated.has(id)) return;
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    this.narrated.add(id);
+
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang === 'he' ? 'he-IL' : 'en-US';
+    utter.rate = lang === 'he' ? 0.95 : 0.9;
+    utter.pitch = 0.9;
+    utter.volume = 0.8;
+
+    // Try to find a good voice
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.lang.startsWith(lang === 'he' ? 'he' : 'en') && v.localService);
+    const fallback = voices.find(v => v.lang.startsWith(lang === 'he' ? 'he' : 'en'));
+    if (preferred) utter.voice = preferred;
+    else if (fallback) utter.voice = fallback;
+
+    window.speechSynthesis.speak(utter);
+  }
+
+  stop() { if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel(); }
+  reset() { this.narrated.clear(); }
+}
+
 const audioEngine = typeof window !== 'undefined' ? new TimelineAudio() : null;
+const narrator = typeof window !== 'undefined' ? new TimelineNarrator() : null;
+
+// Preload voices (some browsers need this)
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
+// Narration scripts — more dramatic than the desc text
+const narrationScripts: Record<string, { he: string; en: string }> = {
+  '2002': {
+    he: 'שנת 2002. בתיאטרון נורד-אוסט במוסקבה, כוחות מיוחדים רוסיים משתמשים בנגזרת פנטניל. 130 בני ערובה נהרגו. איראן לומדת את הלקח.',
+    en: '2002. At the Nord-Ost theater in Moscow, Russian special forces deploy a fentanyl derivative. 130 hostages die. Iran takes note.',
+  },
+  '2005': {
+    he: 'שנת 2005. אוניברסיטת אימאם חוסיין מתחילה לפרסם מאמרים על סינתזת פנטניל וחומרי עצב. התוכנית יוצאת לדרך.',
+    en: '2005. Imam Hossein University begins publishing research on fentanyl synthesis and nerve agent precursors. The program is born.',
+  },
+  '2014': {
+    he: 'שנת 2014. מחלקת הכימיה של IHU מנסה לרכוש אלפי מנות מדטומידין מסין. אין שום מחקר רפואי שמצדיק את זה.',
+    en: '2014. The IHU chemistry department attempts to procure thousands of medetomidine doses from China. No medical research justifies the quantity.',
+  },
+  '2023': {
+    he: 'שנת 2023. מסמכי "פרויקט הרתעה" דולפים. רימוני גז טקטיים עם 40 אחוז מדטומידין. הראיה הישירה הראשונה.',
+    en: '2023. "Project Deterrence" documents leak. Tactical gas grenades loaded with 40 percent medetomidine. The first direct evidence.',
+  },
+  '2025': {
+    he: 'יוני 2025. צה"ל תוקף. מתחם שהיד מייסמי מושמד. מבנה מזרחי בקמפוס IHU נפגע. 15 הרוגים.',
+    en: 'June 2025. The IDF strikes. Shahid Meisami complex destroyed. An eastern building on the IHU campus is hit. 15 killed.',
+  },
+  '2026': {
+    he: 'מרץ 2026. 80 מטוסי קרב ישראליים תוקפים שלוש מטרות ספציפיות בקמפוס. מרכז הכימיה. מנהרות הרוח. מרכז ההנדסה.',
+    en: 'March 2026. 80 Israeli fighter jets strike three specific campus targets. The Chemistry Center. The Wind Tunnels. The Engineering Center.',
+  },
+};
 
 const eventsData: { year: string; icon: typeof Eye; colorClass: string; sound: 'blip' | 'alert' | 'boom' | 'sweep' | 'warning' | 'strike'; he: { label: string; desc: string }; en: { label: string; desc: string } }[] = [
   { year: '2002', icon: Eye, sound: 'blip', colorClass: 'border-amber-500 bg-amber-500/10 text-amber-400', he: { label: 'השראה', desc: 'שימוש בנגזרת פנטניל בתיאטרון במוסקבה — 130 בני ערובה נהרגו' }, en: { label: 'Inspiration', desc: 'Fentanyl derivative used at Moscow theater — 130 hostages killed' } },
@@ -139,17 +207,27 @@ const eventsData: { year: string; icon: typeof Eye; colorClass: string; sound: '
   { year: '2026', icon: Crosshair, sound: 'strike', colorClass: 'border-red-600 bg-red-600/10 text-red-500', he: { label: 'סיכול', desc: 'תקיפות צה"ל על 3 מטרות ספציפיות בקמפוס IHU — מרכז כימיה, מנהרות רוח, מרכז הנדסה' }, en: { label: 'Targeted Strike', desc: 'IDF strikes on 3 specific IHU campus targets — Chemistry, Wind Tunnels, Engineering' } },
 ];
 
-function TimelineEvent({ ev, index, lang }: { ev: typeof eventsData[0]; index: number; lang: string }) {
+function TimelineEvent({ ev, index, lang, narrationOn }: { ev: typeof eventsData[0]; index: number; lang: string; narrationOn: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });
   const soundPlayed = useRef(false);
 
   useEffect(() => {
-    if (isInView && !soundPlayed.current && audioEngine) {
+    if (isInView && !soundPlayed.current) {
       soundPlayed.current = true;
-      audioEngine.play(ev.sound, ev.year);
+      // Play sound effect
+      if (audioEngine) audioEngine.play(ev.sound, ev.year);
+      // Narrate after a short delay (let sound play first)
+      if (narrator && narrationOn) {
+        const script = narrationScripts[ev.year];
+        if (script) {
+          setTimeout(() => {
+            narrator.speak(lang === 'he' ? script.he : script.en, lang, ev.year);
+          }, 800);
+        }
+      }
     }
-  }, [isInView, ev.sound, ev.year]);
+  }, [isInView, ev.sound, ev.year, lang, narrationOn]);
 
   const Icon = ev.icon;
   const data = lang === 'he' ? ev.he : ev.en;
@@ -195,6 +273,7 @@ function TimelineEvent({ ev, index, lang }: { ev: typeof eventsData[0]; index: n
 export default function Timeline() {
   const { t, lang } = useLang();
   const [soundOn, setSoundOn] = useState(true);
+  const [narrationOn, setNarrationOn] = useState(false);
 
   const toggleSound = useCallback(() => {
     setSoundOn(prev => {
@@ -203,31 +282,71 @@ export default function Timeline() {
         audioEngine.enabled = next;
         if (next) audioEngine.reset();
       }
+      if (!next) {
+        // Also disable narration when sound is off
+        setNarrationOn(false);
+        if (narrator) { narrator.enabled = false; narrator.stop(); }
+      }
       return next;
     });
   }, []);
+
+  const toggleNarration = useCallback(() => {
+    setNarrationOn(prev => {
+      const next = !prev;
+      if (narrator) {
+        narrator.enabled = next;
+        if (next) narrator.reset();
+        else narrator.stop();
+      }
+      // Auto-enable sound when narration is turned on
+      if (next && !soundOn) {
+        setSoundOn(true);
+        if (audioEngine) { audioEngine.enabled = true; audioEngine.reset(); }
+      }
+      return next;
+    });
+  }, [soundOn]);
 
   return (
     <section id="timeline" className="relative py-20 px-4 max-w-3xl mx-auto">
       <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-center mb-16">
         <h2 className="text-3xl sm:text-5xl font-black text-white mb-2">{t('timeline.title')}</h2>
         <p className="text-gray-400">{t('timeline.subtitle')}</p>
-        {/* Sound toggle */}
-        <motion.button
-          onClick={toggleSound}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className={`mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-mono border transition-colors ${
-            soundOn
-              ? 'border-blue-500/30 bg-blue-500/10 text-blue-400'
-              : 'border-gray-700/30 bg-gray-800/30 text-gray-500'
-          }`}
-        >
-          {soundOn ? <Volume2 size={12} /> : <VolumeX size={12} />}
-          {soundOn
-            ? (lang === 'he' ? 'צלילים פעילים' : 'Sound ON')
-            : (lang === 'he' ? 'צלילים כבויים' : 'Sound OFF')}
-        </motion.button>
+        {/* Sound & Narration toggles */}
+        <div className="flex items-center justify-center gap-2 mt-3">
+          <motion.button
+            onClick={toggleSound}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-mono border transition-colors ${
+              soundOn
+                ? 'border-blue-500/30 bg-blue-500/10 text-blue-400'
+                : 'border-gray-700/30 bg-gray-800/30 text-gray-500'
+            }`}
+          >
+            {soundOn ? <Volume2 size={12} /> : <VolumeX size={12} />}
+            {soundOn
+              ? (lang === 'he' ? 'צלילים' : 'Sound')
+              : (lang === 'he' ? 'צלילים כבויים' : 'Sound OFF')}
+          </motion.button>
+
+          <motion.button
+            onClick={toggleNarration}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-mono border transition-colors ${
+              narrationOn
+                ? 'border-amber-500/30 bg-amber-500/10 text-amber-400'
+                : 'border-gray-700/30 bg-gray-800/30 text-gray-500'
+            }`}
+          >
+            {narrationOn ? <Mic size={12} /> : <MicOff size={12} />}
+            {narrationOn
+              ? (lang === 'he' ? 'קריינות' : 'Narration')
+              : (lang === 'he' ? 'קריינות כבויה' : 'Narrate OFF')}
+          </motion.button>
+        </div>
       </motion.div>
       <div className="relative">
         {/* Vertical fuse line */}
@@ -243,7 +362,7 @@ export default function Timeline() {
         </motion.div>
 
         {eventsData.map((ev, i) => (
-          <TimelineEvent key={ev.year} ev={ev} index={i} lang={lang} />
+          <TimelineEvent key={ev.year} ev={ev} index={i} lang={lang} narrationOn={narrationOn} />
         ))}
       </div>
     </section>
