@@ -140,6 +140,54 @@ class TimelineAudio {
 class TimelineNarrator {
   public enabled = false; // starts disabled — user must opt in
   private narrated = new Set<string>();
+  private voices: SpeechSynthesisVoice[] = [];
+  private voicesLoaded = false;
+
+  constructor() {
+    this.loadVoices();
+  }
+
+  private loadVoices() {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    
+    const load = () => {
+      this.voices = window.speechSynthesis.getVoices();
+      if (this.voices.length > 0) this.voicesLoaded = true;
+    };
+    
+    load();
+    // Chrome loads voices async
+    window.speechSynthesis.onvoiceschanged = () => load();
+    // Retry a few times
+    setTimeout(load, 100);
+    setTimeout(load, 500);
+    setTimeout(load, 1000);
+  }
+
+  private findVoice(langCode: string): SpeechSynthesisVoice | null {
+    // Refresh voice list
+    if (!this.voicesLoaded) {
+      this.voices = window.speechSynthesis.getVoices();
+      if (this.voices.length > 0) this.voicesLoaded = true;
+    }
+
+    const prefix = langCode === 'he' ? 'he' : 'en';
+
+    // Priority: exact match local > exact match > partial match
+    const exactLocal = this.voices.find(v => v.lang.startsWith(prefix) && v.localService);
+    if (exactLocal) return exactLocal;
+
+    const exact = this.voices.find(v => v.lang.startsWith(prefix));
+    if (exact) return exact;
+
+    // For Hebrew: also try 'iw' (old Java locale code used by some Android)
+    if (langCode === 'he') {
+      const iwVoice = this.voices.find(v => v.lang.startsWith('iw'));
+      if (iwVoice) return iwVoice;
+    }
+
+    return null;
+  }
 
   speak(text: string, lang: string, id: string) {
     if (!this.enabled || this.narrated.has(id)) return;
@@ -149,34 +197,69 @@ class TimelineNarrator {
     // Cancel any ongoing speech
     window.speechSynthesis.cancel();
 
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = lang === 'he' ? 'he-IL' : 'en-US';
-    utter.rate = lang === 'he' ? 0.95 : 0.9;
-    utter.pitch = 0.9;
-    utter.volume = 0.8;
+    const doSpeak = () => {
+      // Break text into sentences for reliable playback (Chrome bug workaround)
+      const sentences = text.split(/(?<=[.!?،])\s+/).filter(s => s.trim().length > 0);
+      
+      const voice = this.findVoice(lang);
+      
+      sentences.forEach((sentence, i) => {
+        const utter = new SpeechSynthesisUtterance(sentence);
+        utter.lang = lang === 'he' ? 'he-IL' : 'en-US';
+        utter.rate = lang === 'he' ? 0.88 : 0.85;
+        utter.pitch = 0.85;
+        utter.volume = 1.0;
 
-    // Try to find a good voice
-    const voices = window.speechSynthesis.getVoices();
-    const preferred = voices.find(v => v.lang.startsWith(lang === 'he' ? 'he' : 'en') && v.localService);
-    const fallback = voices.find(v => v.lang.startsWith(lang === 'he' ? 'he' : 'en'));
-    if (preferred) utter.voice = preferred;
-    else if (fallback) utter.voice = fallback;
+        if (voice) {
+          utter.voice = voice;
+          utter.lang = voice.lang;
+        }
+        
+        // Small pause between sentences
+        if (i > 0) {
+          const pause = new SpeechSynthesisUtterance('');
+          pause.lang = utter.lang;
+          if (voice) pause.voice = voice;
+          window.speechSynthesis.speak(pause);
+        }
 
-    window.speechSynthesis.speak(utter);
+        window.speechSynthesis.speak(utter);
+      });
+
+      // Chrome keepalive: pause/resume every 10s to prevent cutoff
+      const keepAlive = setInterval(() => {
+        if (!window.speechSynthesis.speaking) {
+          clearInterval(keepAlive);
+          return;
+        }
+        window.speechSynthesis.pause();
+        window.speechSynthesis.resume();
+      }, 10000);
+    };
+
+    // If voices not loaded yet, wait and retry
+    if (!this.voicesLoaded || this.voices.length === 0) {
+      setTimeout(() => {
+        this.voices = window.speechSynthesis.getVoices();
+        this.voicesLoaded = this.voices.length > 0;
+        doSpeak();
+      }, 300);
+    } else {
+      doSpeak();
+    }
   }
 
-  stop() { if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel(); }
+  stop() { 
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel(); 
+    }
+  }
+  
   reset() { this.narrated.clear(); }
 }
 
 const audioEngine = typeof window !== 'undefined' ? new TimelineAudio() : null;
 const narrator = typeof window !== 'undefined' ? new TimelineNarrator() : null;
-
-// Preload voices (some browsers need this)
-if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-  window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-}
 
 // Narration scripts — more dramatic than the desc text
 const narrationScripts: Record<string, { he: string; en: string }> = {
@@ -336,7 +419,7 @@ export default function Timeline() {
     setIsPlayingAll(true);
 
     eventsData.forEach((ev, i) => {
-      const delay = i * (narrationOn ? 6000 : 2000);
+      const delay = i * (narrationOn ? 8000 : 2000);
       setTimeout(() => {
         if (audioEngine) audioEngine.play(ev.sound, `all-${ev.year}-${Date.now()}`);
         if (narrator && narrationOn) {
@@ -354,7 +437,7 @@ export default function Timeline() {
     });
 
     // End playing state
-    setTimeout(() => setIsPlayingAll(false), eventsData.length * (narrationOn ? 6000 : 2000) + 1000);
+    setTimeout(() => setIsPlayingAll(false), eventsData.length * (narrationOn ? 8000 : 2000) + 2000);
   }, [lang, narrationOn, activateAudio]);
 
   const toggleSound = useCallback(() => {
