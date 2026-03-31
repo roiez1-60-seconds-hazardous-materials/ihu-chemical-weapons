@@ -136,132 +136,75 @@ class TimelineAudio {
   reset() { this.played.clear(); }
 }
 
-/* ── Speech narration using Web Speech API ── */
+/* ── Speech narration — simplest possible approach ── */
 class TimelineNarrator {
-  public enabled = false; // starts disabled — user must opt in
+  public enabled = false;
   private narrated = new Set<string>();
-  private voices: SpeechSynthesisVoice[] = [];
-  private voicesLoaded = false;
-
-  constructor() {
-    this.loadVoices();
-  }
-
-  private loadVoices() {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    
-    const load = () => {
-      this.voices = window.speechSynthesis.getVoices();
-      if (this.voices.length > 0) this.voicesLoaded = true;
-    };
-    
-    load();
-    // Chrome loads voices async
-    window.speechSynthesis.onvoiceschanged = () => load();
-    // Retry a few times
-    setTimeout(load, 100);
-    setTimeout(load, 500);
-    setTimeout(load, 1000);
-  }
-
-  private findVoice(langCode: string): SpeechSynthesisVoice | null {
-    // Refresh voice list
-    if (!this.voicesLoaded) {
-      this.voices = window.speechSynthesis.getVoices();
-      if (this.voices.length > 0) this.voicesLoaded = true;
-    }
-
-    const prefix = langCode === 'he' ? 'he' : 'en';
-
-    // Priority: exact match local > exact match > partial match
-    const exactLocal = this.voices.find(v => v.lang.startsWith(prefix) && v.localService);
-    if (exactLocal) return exactLocal;
-
-    const exact = this.voices.find(v => v.lang.startsWith(prefix));
-    if (exact) return exact;
-
-    // For Hebrew: also try 'iw' (old Java locale code used by some Android)
-    if (langCode === 'he') {
-      const iwVoice = this.voices.find(v => v.lang.startsWith('iw'));
-      if (iwVoice) return iwVoice;
-    }
-
-    return null;
-  }
 
   speak(text: string, lang: string, id: string) {
     if (!this.enabled || this.narrated.has(id)) return;
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     this.narrated.add(id);
 
-    // Cancel any ongoing speech
+    // Stop current speech first
     window.speechSynthesis.cancel();
 
-    const doSpeak = () => {
-      // Break text into sentences for reliable playback (Chrome bug workaround)
-      const sentences = text.split(/(?<=[.!?،])\s+/).filter(s => s.trim().length > 0);
-      
-      const voice = this.findVoice(lang);
-      
-      sentences.forEach((sentence, i) => {
-        const utter = new SpeechSynthesisUtterance(sentence);
-        utter.lang = lang === 'he' ? 'he-IL' : 'en-US';
-        utter.rate = lang === 'he' ? 0.88 : 0.85;
-        utter.pitch = 0.85;
-        utter.volume = 1.0;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang === 'he' ? 'he-IL' : 'en-US';
+    utter.rate = 0.9;
+    utter.pitch = 0.9;
+    utter.volume = 1.0;
 
-        if (voice) {
-          utter.voice = voice;
-          utter.lang = voice.lang;
-        }
-        
-        // Small pause between sentences
-        if (i > 0) {
-          const pause = new SpeechSynthesisUtterance('');
-          pause.lang = utter.lang;
-          if (voice) pause.voice = voice;
-          window.speechSynthesis.speak(pause);
-        }
+    // Find best voice
+    const voices = window.speechSynthesis.getVoices();
+    let voice: SpeechSynthesisVoice | undefined;
 
-        window.speechSynthesis.speak(utter);
-      });
-
-      // Chrome keepalive: pause/resume every 10s to prevent cutoff
-      const keepAlive = setInterval(() => {
-        if (!window.speechSynthesis.speaking) {
-          clearInterval(keepAlive);
-          return;
-        }
-        window.speechSynthesis.pause();
-        window.speechSynthesis.resume();
-      }, 10000);
-    };
-
-    // If voices not loaded yet, wait and retry
-    if (!this.voicesLoaded || this.voices.length === 0) {
-      setTimeout(() => {
-        this.voices = window.speechSynthesis.getVoices();
-        this.voicesLoaded = this.voices.length > 0;
-        doSpeak();
-      }, 300);
+    if (lang === 'he') {
+      voice = voices.find(v => v.lang === 'he-IL')
+        || voices.find(v => v.lang.startsWith('he'))
+        || voices.find(v => v.lang.startsWith('iw'));
     } else {
-      doSpeak();
+      voice = voices.find(v => v.lang === 'en-US')
+        || voices.find(v => v.lang.startsWith('en'));
     }
+
+    if (voice) {
+      utter.voice = voice;
+      utter.lang = voice.lang;
+    }
+
+    // Speak
+    window.speechSynthesis.speak(utter);
+
+    // Chrome keepalive
+    const ka = setInterval(() => {
+      if (!window.speechSynthesis.speaking) { clearInterval(ka); return; }
+      window.speechSynthesis.pause();
+      window.speechSynthesis.resume();
+    }, 5000);
+    utter.onend = () => clearInterval(ka);
+    utter.onerror = () => clearInterval(ka);
   }
 
-  stop() { 
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel(); 
-    }
+  stop() {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
   }
-  
+
   reset() { this.narrated.clear(); }
 }
 
 const audioEngine = typeof window !== 'undefined' ? new TimelineAudio() : null;
 const narrator = typeof window !== 'undefined' ? new TimelineNarrator() : null;
 
-// Narration scripts — more dramatic than the desc text
+// Preload voices on page load
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  if (window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+  }
+}
+
+// Narration scripts
 const narrationScripts: Record<string, { he: string; en: string }> = {
   '2002': {
     he: 'שנת 2002. בתיאטרון נורד-אוסט במוסקבה, כוחות מיוחדים רוסיים משתמשים בנגזרת פנטניל. 130 בני ערובה נהרגו. איראן לומדת את הלקח.',
@@ -272,15 +215,15 @@ const narrationScripts: Record<string, { he: string; en: string }> = {
     en: '2005. Imam Hossein University begins publishing research on fentanyl synthesis and nerve agent precursors. The program is born.',
   },
   '2014': {
-    he: 'שנת 2014. מחלקת הכימיה של IHU מנסה לרכוש אלפי מנות מדטומידין מסין. אין שום מחקר רפואי שמצדיק את זה.',
-    en: '2014. The IHU chemistry department attempts to procure thousands of medetomidine doses from China. No medical research justifies the quantity.',
+    he: 'שנת 2014. מחלקת הכימיה מנסה לרכוש אלפי מנות מדטומידין מסין. אין שום מחקר רפואי שמצדיק את זה.',
+    en: '2014. The chemistry department attempts to procure thousands of medetomidine doses from China. No medical research justifies the quantity.',
   },
   '2023': {
-    he: 'שנת 2023. מסמכי "פרויקט הרתעה" דולפים. רימוני גז טקטיים עם 40 אחוז מדטומידין. הראיה הישירה הראשונה.',
-    en: '2023. "Project Deterrence" documents leak. Tactical gas grenades loaded with 40 percent medetomidine. The first direct evidence.',
+    he: 'שנת 2023. מסמכי פרויקט הרתעה דולפים. רימוני גז טקטיים עם 40 אחוז מדטומידין. הראיה הישירה הראשונה.',
+    en: '2023. Project Deterrence documents leak. Tactical gas grenades loaded with 40 percent medetomidine. The first direct evidence.',
   },
   '2025': {
-    he: 'יוני 2025. צה"ל תוקף. מתחם שהיד מייסמי מושמד. מבנה מזרחי בקמפוס IHU נפגע. 15 הרוגים.',
+    he: 'יוני 2025. צהל תוקף. מתחם שהיד מייסמי מושמד. מבנה מזרחי בקמפוס נפגע. 15 הרוגים.',
     en: 'June 2025. The IDF strikes. Shahid Meisami complex destroyed. An eastern building on the IHU campus is hit. 15 killed.',
   },
   '2026': {
@@ -288,6 +231,27 @@ const narrationScripts: Record<string, { he: string; en: string }> = {
     en: 'March 2026. 80 Israeli fighter jets strike three specific campus targets. The Chemistry Center. The Wind Tunnels. The Engineering Center.',
   },
 };
+
+/** Check if device has Hebrew TTS */
+function hasHebrewVoice(): boolean {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return false;
+  const voices = window.speechSynthesis.getVoices();
+  return voices.some(v => v.lang.startsWith('he') || v.lang.startsWith('iw'));
+}
+
+/** Get narration text — falls back to English if no Hebrew voice */
+function getNarrationText(year: string, lang: string): { text: string; actualLang: string } {
+  const script = narrationScripts[year];
+  if (!script) return { text: '', actualLang: 'en' };
+
+  if (lang === 'he' && hasHebrewVoice()) {
+    return { text: script.he, actualLang: 'he' };
+  } else if (lang === 'he' && !hasHebrewVoice()) {
+    // No Hebrew voice — use English
+    return { text: script.en, actualLang: 'en' };
+  }
+  return { text: script.en, actualLang: 'en' };
+}
 
 const eventsData: { year: string; icon: typeof Eye; colorClass: string; sound: 'blip' | 'alert' | 'boom' | 'sweep' | 'warning' | 'strike'; he: { label: string; desc: string }; en: { label: string; desc: string } }[] = [
   { year: '2002', icon: Eye, sound: 'blip', colorClass: 'border-amber-500 bg-amber-500/10 text-amber-400', he: { label: 'השראה', desc: 'שימוש בנגזרת פנטניל בתיאטרון במוסקבה — 130 בני ערובה נהרגו' }, en: { label: 'Inspiration', desc: 'Fentanyl derivative used at Moscow theater — 130 hostages killed' } },
@@ -315,7 +279,7 @@ function TimelineEvent({ ev, index, lang, narrationOn, soundOn, onActivate }: { 
         const script = narrationScripts[ev.year];
         if (script) {
           setTimeout(() => {
-            narrator.speak(lang === 'he' ? script.he : script.en, lang, `auto-${ev.year}`);
+            const n1 = getNarrationText(ev.year, lang); narrator.speak(n1.text, n1.actualLang, `auto-${ev.year}`);
           }, 800);
         }
       }
@@ -337,7 +301,7 @@ function TimelineEvent({ ev, index, lang, narrationOn, soundOn, onActivate }: { 
       const script = narrationScripts[ev.year];
       if (script) {
         setTimeout(() => {
-          narrator.speak(lang === 'he' ? script.he : script.en, lang, `click-${ev.year}-${Date.now()}`);
+          const n2 = getNarrationText(ev.year, lang); narrator.speak(n2.text, n2.actualLang, `click-${ev.year}-${Date.now()}`);
         }, 600);
       }
     }
@@ -404,6 +368,7 @@ export default function Timeline() {
   const [soundOn, setSoundOn] = useState(true);
   const [narrationOn, setNarrationOn] = useState(false);
   const [isPlayingAll, setIsPlayingAll] = useState(false);
+  const [noHebrewVoice, setNoHebrewVoice] = useState(false);
 
   /** Called from user gesture to unlock AudioContext */
   const activateAudio = useCallback(() => {
@@ -426,7 +391,7 @@ export default function Timeline() {
           const script = narrationScripts[ev.year];
           if (script) {
             setTimeout(() => {
-              narrator.speak(lang === 'he' ? script.he : script.en, lang, `all-${ev.year}-${Date.now()}`);
+              const n3 = getNarrationText(ev.year, lang); narrator.speak(n3.text, n3.actualLang, `all-${ev.year}-${Date.now()}`);
             }, 600);
           }
         }
@@ -469,9 +434,15 @@ export default function Timeline() {
         setSoundOn(true);
         if (audioEngine) { audioEngine.enabled = true; audioEngine.reset(); }
       }
+      // Check if Hebrew voice exists when turning on in Hebrew mode
+      if (next && lang === 'he') {
+        setNoHebrewVoice(!hasHebrewVoice());
+      } else {
+        setNoHebrewVoice(false);
+      }
       return next;
     });
-  }, [soundOn, activateAudio]);
+  }, [soundOn, activateAudio, lang]);
 
   return (
     <section id="timeline" className="relative py-20 px-4 max-w-3xl mx-auto">
@@ -535,6 +506,15 @@ export default function Timeline() {
             ? 'לחצו על כל אירוע להשמעת צליל וקריינות בעברית, או "נגן הכל" לחוויה מלאה'
             : 'Click any event for sound & English narration, or "Play All" for the full experience'}
         </p>
+        {noHebrewVoice && narrationOn && lang === 'he' && (
+          <motion.p
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-[10px] text-amber-400 mt-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 inline-block"
+          >
+            ⚠️ לא נמצא קול עברי במכשיר — הקריינות תושמע באנגלית. להתקנת קול עברי: הגדרות → נגישות → תוכן מדובר → קולות → עברית
+          </motion.p>
+        )}
       </motion.div>
       <div className="relative">
         {/* Vertical fuse line */}
