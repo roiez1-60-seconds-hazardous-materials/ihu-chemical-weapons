@@ -172,9 +172,9 @@ export default function EmergencyCard() {
                     { label: 'רחפן — שטח פתוח', dist: '300 מ\'', color: '#3b82f6' },
                     { label: 'מייצר ערפל', dist: '500 מ\' נגד רוח', color: '#f59e0b' },
                   ] : [
-                    { label: 'Grenade — enclosed', dist: '100m', color: '#ef4444' },
-                    { label: 'Drone — open area', dist: '300m', color: '#3b82f6' },
-                    { label: 'Fog generator', dist: '500m upwind', color: '#f59e0b' },
+                    { label: 'Enclosed space', dist: '100m', color: '#ef4444' },
+                    { label: 'Open area', dist: '200m', color: '#3b82f6' },
+                    { label: 'Fog generator', dist: '200m+ upwind', color: '#f59e0b' },
                   ]).map((d, i) => (
                     <div key={i} className="text-center p-2.5 rounded-lg" style={{ backgroundColor: `${d.color}08`, border: `1px solid ${d.color}20` }}>
                       <div className="font-mono font-black text-lg" style={{ color: d.color }}>{d.dist}</div>
@@ -196,12 +196,12 @@ export default function EmergencyCard() {
                   {(isHe ? [
                     '2 מ"ג IM (תוך-שרירי) או IN (תוך-אפי) מיד',
                     'אם אין תגובה תוך 2-3 דקות — מנה נוספת',
-                    'חשד לקרפנטניל — התחל עם 4 מ"ג, חזור על מנות',
+                    'חשד לקרפנטניל — מנות גבוהות יותר וחוזרות. אין פרוטוקול ספציפי מפורסם',
                     'המשך מעקב — נלוקסון מתפרק מהר יותר מהחומר',
                   ] : [
                     '2mg IM (intramuscular) or IN (intranasal) immediately',
                     'No response in 2-3 min — administer additional dose',
-                    'Suspected carfentanil — start with 4mg, repeat doses',
+                    'Suspected carfentanil — higher and repeated doses needed. No specific published protocol',
                     'Continue monitoring — naloxone wears off faster than agent',
                   ]).map((line, i) => (
                     <div key={i} className="flex items-start gap-1.5">
@@ -217,8 +217,8 @@ export default function EmergencyCard() {
                 <AlertTriangle size={14} className="text-red-400 flex-shrink-0 mt-0.5" />
                 <span className="text-[10px] text-red-300 leading-relaxed">
                   {isHe
-                    ? 'שילוב מדטומידין+פנטניל עלול לנטרל את הנלוקסון. בכל חשד לשילוב — דרוש טיפול רפואי מתקדם מיידי.'
-                    : 'Medetomidine+fentanyl combination may neutralize naloxone. If combination suspected — advanced medical care required immediately.'}
+                    ? 'שילוב מדטומידין+פנטניל: נלוקסון חוסם רק את הפנטניל אך לא משפיע על המדטומידין. נפגע עלול להישאר מורדם גם לאחר מתן נלוקסון. נדרש טיפול רפואי מתקדם מיידי.'
+                    : 'Medetomidine+fentanyl combination: naloxone only blocks the fentanyl but has no effect on medetomidine. Casualty may remain sedated even after naloxone. Advanced medical care required immediately.'}
                 </span>
               </div>
 

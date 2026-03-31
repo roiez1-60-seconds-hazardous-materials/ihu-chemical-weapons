@@ -28,8 +28,8 @@ export default function HazMat() {
         </motion.div>
         <p className="text-sm text-red-300/80 leading-relaxed">
           {isHe
-            ? 'שילוב פנטניל עם מדטומידין מנטרל את השפעת הנלוקסון — פרוטוקולי נוגד אופיואידים סטנדרטיים עלולים להיות לא מספקים. נדרשת היערכות רפואית חלופית.'
-            : 'Combining fentanyl with medetomidine neutralizes naloxone — standard opioid antidote protocols may be insufficient. Alternative medical preparedness required.'}
+            ? 'שילוב פנטניל עם מדטומידין: נלוקסון חוסם רק את הפנטניל אך לא משפיע על המדטומידין (מנגנון פעולה שונה — אלפא-2 אדרנרגי). נפגע עלול להישאר מורדם וללא נשימה תקינה גם לאחר מתן נלוקסון. נדרש טיפול רפואי מתקדם.'
+            : 'Fentanyl combined with medetomidine: naloxone only blocks the fentanyl but has no effect on the medetomidine (different mechanism — alpha-2 adrenergic). Casualty may remain deeply sedated and with impaired breathing even after naloxone. Advanced medical care required.'}
         </p>
       </motion.div>
 
