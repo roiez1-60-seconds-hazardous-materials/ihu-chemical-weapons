@@ -31,7 +31,7 @@ const chemicals: Chemical[] = [
       onset: 'Seconds to minutes (inhalation), minutes (dermal)',
       mechanism: 'Binds to sites in the brain that control breathing and shuts them down. Causes complete respiratory arrest, loss of consciousness, and death without treatment.',
       routes: 'Inhalation (aerosol), dermal absorption, ingestion, injection',
-      antidote: 'Naloxone (Narcan) — a reversal drug that blocks fentanyl's effect. Must administer within minutes. Repeat doses often needed as naloxone wears off faster than fentanyl.',
+      antidote: 'Naloxone (Narcan) — a reversal drug that blocks the effect of fentanyl. Must administer within minutes. Repeat doses often needed as naloxone wears off faster than fentanyl.',
       source: 'FDA Sublimaze Label, DEA, EUDA Drug Profile, PubChem CID 3345',
     },
   },
