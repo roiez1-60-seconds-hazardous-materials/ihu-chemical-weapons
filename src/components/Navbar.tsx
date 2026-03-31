@@ -8,7 +8,7 @@ const WHATSAPP_LINK = 'https://chat.whatsapp.com/K4NzcZucmimKYFOXE3VVtD?mode=gi_
 
 const sections = [
   'home','timeline','paradigm','chain','network',
-  'platforms','response','satellite','hazmat','glossary','gallery'
+  'platforms','response','hazmat','glossary','gallery'
 ];
 
 export default function Navbar() {

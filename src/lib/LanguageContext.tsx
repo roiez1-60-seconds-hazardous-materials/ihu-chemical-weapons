@@ -20,7 +20,6 @@ const dict: Record<string, Record<Lang, string>> = {
   'nav.network': { he: 'רשת קשרים', en: 'Network' },
   'nav.platforms': { he: 'פלטפורמות', en: 'Platforms' },
   'nav.response': { he: 'תגובה', en: 'Response' },
-  'nav.satellite': { he: 'לוויין', en: 'Satellite' },
   'nav.hazmat': { he: 'טב"ק כימי', en: 'Chem CBRN' },
   'nav.glossary': { he: 'מילון', en: 'Glossary' },
   'nav.gallery': { he: 'גלריה', en: 'Gallery' },

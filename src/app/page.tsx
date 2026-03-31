@@ -9,7 +9,6 @@ import Chain from '@/components/Chain';
 import NetworkGraph from '@/components/NetworkGraph';
 import Platforms from '@/components/Platforms';
 import Strikes from '@/components/Strikes';
-import SatelliteCompare from '@/components/SatelliteCompare';
 import HazMat from '@/components/HazMat';
 import Glossary from '@/components/Glossary';
 import Gallery from '@/components/Gallery';
@@ -40,8 +39,6 @@ export default function Home() {
         <Platforms />
         <Divider />
         <Strikes />
-        <Divider />
-        <SatelliteCompare />
         <Divider />
         <HazMat />
         <Divider />
