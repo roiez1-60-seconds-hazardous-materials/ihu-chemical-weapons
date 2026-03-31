@@ -92,7 +92,7 @@ export default function Insights() {
       >
         <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
           {isHe
-            ? 'תוכנית ה-PBA של איראן מסמלת מעבר מנשק השמדה המונית לנשק הגורם לאיבוד הכרה ומוות — כלים המיועדים לשימוש יומיומי במלחמות פרוקסי באזור האפור.'
+            ? 'תוכנית החמ"ת של איראן מסמלת מעבר מנשק השמדה המונית לנשק הגורם לאיבוד הכרה ומוות — כלים המיועדים לשימוש יומיומי במלחמות פרוקסי באזור האפור.'
             : "Iran's PBA program symbolizes a shift from WMDs to tactical incapacitation weapons — tools designed for everyday use in gray-zone proxy wars."}
         </p>
         <motion.p

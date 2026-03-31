@@ -11,8 +11,8 @@ const rows = [
 ];
 
 const pillars = [
-  { he: { title: 'PBAs', desc: 'פנטניל ומדטומידין — קטלני מעל 2 מ"ג' }, en: { title: 'PBAs', desc: 'Fentanyl & medetomidine — lethal above 2mg' }, color: 'red' },
-  { he: { title: 'חומרי עצבים', desc: 'כולל נוביצ\'וק — ייצור בקנה מידה קטן' }, en: { title: 'Nerve Agents', desc: 'Including Novichok — small-scale production' }, color: 'purple' },
+  { he: { title: 'חמ"ת', desc: 'פנטניל ומדטומידין — קטלני מעל 2 מ"ג' }, en: { title: 'PBAs', desc: 'Fentanyl & medetomidine — lethal above 2mg' }, color: 'red' },
+  { he: { title: 'גזי עצבים', desc: 'כולל נוביצ\'וק — ייצור בקנה מידה קטן' }, en: { title: 'Nerve Agents', desc: 'Including Novichok — small-scale production' }, color: 'purple' },
   { he: { title: 'RCAs', desc: 'רימוני "אשכן" — ללא הצהרה מלאה' }, en: { title: 'RCAs', desc: '"Ashkan" grenades — undeclared' }, color: 'amber' },
 ];
 
@@ -57,7 +57,7 @@ export default function Paradigm() {
           <div className="p-3 text-center border-x border-gray-700/30">
             <div className="flex items-center justify-center gap-1">
               <Syringe size={14} className="text-red-400" />
-              <span className="text-sm font-bold text-red-400">PBAs</span>
+              <span className="text-sm font-bold text-red-400">{lang === 'he' ? 'חמ"ת' : 'PBAs'}</span>
             </div>
           </div>
           <div className="p-3 text-center">
