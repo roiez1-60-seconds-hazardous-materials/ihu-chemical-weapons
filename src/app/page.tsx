@@ -6,15 +6,20 @@ import Hero from '@/components/Hero';
 import Timeline from '@/components/Timeline';
 import Paradigm from '@/components/Paradigm';
 import Chain from '@/components/Chain';
+import NetworkGraph from '@/components/NetworkGraph';
 import Platforms from '@/components/Platforms';
 import Strikes from '@/components/Strikes';
+import SatelliteCompare from '@/components/SatelliteCompare';
 import HazMat from '@/components/HazMat';
 import Glossary from '@/components/Glossary';
 import Gallery from '@/components/Gallery';
 import Sources from '@/components/Sources';
 import Insights from '@/components/Insights';
-
 import Footer from '@/components/Footer';
+
+const Divider = () => (
+  <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto my-4" />
+);
 
 export default function Home() {
   return (
@@ -23,27 +28,30 @@ export default function Home() {
       <Navbar />
       <main className="relative z-10 pt-16">
         <Hero />
-        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto my-4" />
+        <Divider />
         <Timeline />
-        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto my-4" />
+        <Divider />
         <Paradigm />
-        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto my-4" />
+        <Divider />
         <Chain />
-        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto my-4" />
+        <Divider />
+        <NetworkGraph />
+        <Divider />
         <Platforms />
-        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto my-4" />
+        <Divider />
         <Strikes />
-        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto my-4" />
+        <Divider />
+        <SatelliteCompare />
+        <Divider />
         <HazMat />
-        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto my-4" />
+        <Divider />
         <Gallery />
-        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto my-4" />
+        <Divider />
         <Glossary />
-        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto my-4" />
+        <Divider />
         <Sources />
-        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto my-4" />
+        <Divider />
         <Insights />
-        {/* Footer */}
         <Footer />
       </main>
     </LangProvider>
