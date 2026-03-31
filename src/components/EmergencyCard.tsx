@@ -81,12 +81,12 @@ export default function EmergencyCard() {
                 <div className="space-y-1.5">
                   {(isHe ? [
                     { action: 'הגנה עצמית — ציוד נשימתי מלא (SCBA). אין כניסה ללא מיגון!', color: '#ef4444' },
-                    { action: 'ריחוק — פנה את האזור 100 מטר לפחות נגד כיוון הרוח', color: '#f59e0b' },
+                    { action: 'בידוד ראשוני — פנה את האזור. במבנה: 100 מטר. בשטח פתוח: 200 מטר נגד כיוון הרוח', color: '#f59e0b' },
                     { action: 'נלוקסון — תן 2 מ"ג IM/IN לכל נפגע ללא הכרה. חזור כל 2-3 דקות', color: '#22c55e' },
                     { action: 'דווח — "אירוע טב"ק כימי חשוד PBA" + מספר נפגעים + כיוון רוח', color: '#3b82f6' },
                   ] : [
                     { action: 'Self-protection — full respiratory equipment (SCBA). Do not enter without PPE!', color: '#ef4444' },
-                    { action: 'Evacuate — clear the area 100m minimum upwind', color: '#f59e0b' },
+                    { action: 'Initial isolation — clear the area. Enclosed: 100m. Open area: 200m upwind', color: '#f59e0b' },
                     { action: 'Naloxone — administer 2mg IM/IN to each unconscious casualty. Repeat every 2-3 min', color: '#22c55e' },
                     { action: 'Report — "Suspected PBA chemical CBRN event" + casualty count + wind direction', color: '#3b82f6' },
                   ]).map((item, i) => (
@@ -116,7 +116,7 @@ export default function EmergencyCard() {
               <div className="flex items-center gap-2">
                 <Skull size={20} className="text-white" />
                 <span className="text-white font-black text-sm tracking-wider">
-                  {isHe ? 'נתוני חומרים ומרחקי ריחוק' : 'AGENT DATA & EVACUATION DISTANCES'}
+                  {isHe ? 'נתוני חומרים ומרחק בידוד ראשוני' : 'AGENT DATA & INITIAL ISOLATION DISTANCE'}
                 </span>
               </div>
               <span className="text-blue-200 text-[10px] font-mono">2/2</span>
@@ -163,24 +163,35 @@ export default function EmergencyCard() {
                 <div className="flex items-center gap-2 mb-2">
                   <Users size={14} className="text-amber-400" />
                   <span className="text-amber-400 text-xs font-black tracking-wider uppercase">
-                    {isHe ? 'מרחקי ריחוק' : 'EVACUATION DISTANCES'}
+                    {isHe ? 'מרחק בידוד ראשוני (מב"ר)' : 'INITIAL ISOLATION DISTANCE'}
                   </span>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {(isHe ? [
-                    { label: 'רימון — חלל סגור', dist: '100 מ\'', color: '#ef4444' },
-                    { label: 'רחפן — שטח פתוח', dist: '300 מ\'', color: '#3b82f6' },
-                    { label: 'מייצר ערפל', dist: '500 מ\' נגד רוח', color: '#f59e0b' },
+                    { label: 'במבנה', dist: '100 מ׳', color: '#ef4444' },
+                    { label: 'שטח פתוח', dist: '200 מ׳', color: '#3b82f6' },
                   ] : [
                     { label: 'Enclosed space', dist: '100m', color: '#ef4444' },
                     { label: 'Open area', dist: '200m', color: '#3b82f6' },
-                    { label: 'Fog generator', dist: '200m+ upwind', color: '#f59e0b' },
                   ]).map((d, i) => (
                     <div key={i} className="text-center p-2.5 rounded-lg" style={{ backgroundColor: `${d.color}08`, border: `1px solid ${d.color}20` }}>
                       <div className="font-mono font-black text-lg" style={{ color: d.color }}>{d.dist}</div>
                       <div className="text-[9px] text-gray-500 mt-0.5">{d.label}</div>
                     </div>
                   ))}
+                </div>
+                <div className="mt-2 px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/15">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <WindIcon size={12} className="text-amber-400" />
+                    <span className="text-[10px] text-amber-400 font-bold">
+                      {isHe ? 'מייצר ערפל' : 'Fog Generator'}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-gray-400 leading-relaxed">
+                    {isHe
+                      ? 'מב"ר 200 מ׳ + מרחק נוסף במורד הרוח (תלוי עוצמת המקור). יש להרחיב בידוד בהתאם לתנאי רוח ושטח.'
+                      : 'Initial isolation 200m + additional distance downwind (depends on source intensity). Expand isolation based on wind and terrain conditions.'}
+                  </span>
                 </div>
               </div>
 
