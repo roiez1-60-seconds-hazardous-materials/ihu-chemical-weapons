@@ -390,7 +390,7 @@ function TimelineEvent({ ev, index, lang, narrationOn, soundOn, onActivate }: { 
             animate={isPlaying ? { opacity: [0.5, 1, 0.5] } : {}}
             transition={{ duration: 0.5, repeat: isPlaying ? 3 : 0 }}
           >
-            {isPlaying ? '▶ ...' : (lang === 'he' ? '▶ לחץ להשמעה' : '▶ click to play')}
+            {isPlaying ? '▶ ...' : (lang === 'he' ? '▶ לחץ להשמעה בעברית' : '▶ click to hear in English')}
           </motion.span>
         </div>
         <p className="text-xs text-gray-400 leading-relaxed">{data.desc}</p>
@@ -494,8 +494,8 @@ export default function Timeline() {
           >
             <Play size={14} />
             {isPlayingAll
-              ? (lang === 'he' ? 'מנגן...' : 'Playing...')
-              : (lang === 'he' ? 'נגן הכל' : 'Play All')}
+              ? (lang === 'he' ? 'מנגן בעברית...' : 'Playing in English...')
+              : (lang === 'he' ? '▶ נגן הכל בעברית' : '▶ Play All in English')}
           </motion.button>
 
           <motion.button
@@ -526,12 +526,14 @@ export default function Timeline() {
           >
             {narrationOn ? <Mic size={12} /> : <MicOff size={12} />}
             {narrationOn
-              ? (lang === 'he' ? 'קריינות' : 'Narration')
+              ? (lang === 'he' ? 'קריינות עברית' : 'Narration EN')
               : (lang === 'he' ? 'קריינות כבויה' : 'Narrate OFF')}
           </motion.button>
         </div>
         <p className="text-[9px] text-gray-600 mt-2 font-mono">
-          {lang === 'he' ? 'לחצו על כל אירוע להשמעת צליל וקריינות, או "נגן הכל" לחוויה מלאה' : 'Click any event for sound & narration, or "Play All" for the full experience'}
+          {lang === 'he'
+            ? 'לחצו על כל אירוע להשמעת צליל וקריינות בעברית, או "נגן הכל" לחוויה מלאה'
+            : 'Click any event for sound & English narration, or "Play All" for the full experience'}
         </p>
       </motion.div>
       <div className="relative">
