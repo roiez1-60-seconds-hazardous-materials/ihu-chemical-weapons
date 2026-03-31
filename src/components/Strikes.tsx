@@ -12,7 +12,7 @@ const targets = [
   {
     id: '01',
     color: '#ef4444',
-    he: { name: 'מרכז הכימיה והסינתזה', desc: 'מוקד פיתוח וסינתזת חמ"ת (חומרים מבוססי תרופות) — כולל פנטניל ואנלוגים' },
+    he: { name: 'מרכז הכימיה והסינתזה', desc: 'מוקד פיתוח וסינתזת חומרים מבוססי תרופות — כולל פנטניל ואנלוגים' },
     en: { name: 'Chemistry & Synthesis Center', desc: 'PBA development and synthesis hub — including fentanyl and analogues' },
   },
   {

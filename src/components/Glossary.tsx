@@ -24,7 +24,7 @@ const terms: { term: string; cat: Cat; he: string; en: string }[] = [
   { term: 'OPCW', cat: 'org', he: 'הארגון לאיסור נשק כימי — אחראי על אכיפת CWC.', en: 'Organisation for the Prohibition of Chemical Weapons — enforces the CWC.' },
   { term: 'CWC', cat: 'tech', he: 'אמנת הנשק הכימי — אוסרת פיתוח, ייצור ושימוש בנשק כימי.', en: 'Chemical Weapons Convention — prohibits development, production and use of chemical weapons.' },
   { term: 'PBA', cat: 'tech', he: 'חומרים מבוססי תרופות — חומרים פרמצבטיים שהוסבו לשימוש נשקי.', en: 'Pharmaceutical-Based Agents — pharmaceutical agents weaponized for military use.' },
-  { term: 'CNS', cat: 'tech', he: 'מערכת העצבים המרכזית — המטרה העיקרית של חמ"ת.', en: 'Central Nervous System — primary target of PBAs.' },
+  { term: 'CNS', cat: 'tech', he: 'מערכת העצבים המרכזית — המטרה העיקרית של חומרים מבוססי תרופות.', en: 'Central Nervous System — primary target of PBAs.' },
   { term: 'AChE', cat: 'tech', he: 'אצטילכולינאסטראז — אנזים שנחסם ע"י גזי עצבים מסורתיים (סארין, VX).', en: 'Acetylcholinesterase — enzyme inhibited by traditional nerve agents (sarin, VX).' },
   { term: 'RCA', cat: 'tech', he: 'חומרי פיזור מהומות — כגון CS, גז מדמיע. רימוני "אשכן".', en: 'Riot Control Agents — e.g. CS tear gas. "Ashkan" grenades.' },
   { term: 'SAR', cat: 'tech', he: 'יחסי מבנה-פעילות — מסגרת המקשרת שינויים מולקולריים להשפעות ביולוגיות.', en: 'Structure-Activity Relationship — framework linking molecular changes to biological effects.' },

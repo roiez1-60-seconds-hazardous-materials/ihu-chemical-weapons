@@ -16,7 +16,7 @@ interface NodeData {
 
 const nodes: NodeData[] = [
   { id: 'ihu', x: 300, y: 100, r: 38, color: '#3b82f6', glow: '#3b82f680',
-    he: { label: 'IHU', role: 'מו"פ מרכזי', detail: 'אוניברסיטת אימאם חוסיין — המוסד האקדמי היחיד של משמרות המהפכה. מרכז הפיתוח של חמ"ת כולל סינתזת פנטניל, מדטומידין ונגזרותיהם. 25 פקולטות, 78 מרכזי מדע וטכנולוגיה.' },
+    he: { label: 'IHU', role: 'מו"פ מרכזי', detail: 'אוניברסיטת אימאם חוסיין — המוסד האקדמי היחיד של משמרות המהפכה. מרכז הפיתוח של חומרים מבוססי תרופות כולל סינתזת פנטניל, מדטומידין ונגזרותיהם. 25 פקולטות, 78 מרכזי מדע וטכנולוגיה.' },
     en: { label: 'IHU', role: 'Central R&D', detail: 'Imam Hossein University — IRGC\'s sole academic institution. PBA development hub including fentanyl, medetomidine synthesis. 25 faculties, 78 S&T centers.' } },
   { id: 'spnd', x: 150, y: 220, r: 30, color: '#a855f7', glow: '#a855f780',
     he: { label: 'SPND', role: 'פיקוח ומימון', detail: 'ארגון חדשנות ומחקר ביטחוני. תיאום בין IHU לגורמי ייצור. ניהל את תוכנית הנשק הגרעיני ומנהל תוכניות נשק כימי. ראשו לשעבר: מוחסן פקריזאדה.' },

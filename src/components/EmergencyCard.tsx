@@ -16,7 +16,7 @@ export default function EmergencyCard() {
           {h ? 'כרטיס תגובת חירום' : 'Emergency Response Card'}
         </h2>
         <p className="text-gray-400 text-sm">
-          {h ? 'אירוע במעורבות חמ"ת (חומרים מבוססי תרופות) \u2022 לחצו להפוך' : 'Pharmaceutical-Based Agent (PBA) Event \u2022 Click to flip'}
+          {h ? 'אירוע במעורבות חומרים מבוססי תרופות \u2022 לחצו להפוך' : 'Pharmaceutical-Based Agent (PBA) Event \u2022 Click to flip'}
         </p>
       </motion.div>
 
@@ -30,10 +30,10 @@ export default function EmergencyCard() {
                 <AlertTriangle size={18} className="text-white" />
                 <div>
                   <div className="text-white font-black text-xs tracking-wider">
-                    {h ? 'כרטיס תגובת חירום \u2014 אירוע חמ"ת (חומרים מבוססי תרופות)' : 'EMERGENCY RESPONSE \u2014 PBA EVENT'}
+                    {h ? 'כרטיס תגובת חירום \u2014 אירוע חומרים מבוססי תרופות' : 'EMERGENCY RESPONSE \u2014 PBA EVENT'}
                   </div>
                   <div className="text-red-200 text-[9px]">
-                    {h ? 'חמ"ת: פנטניל, קרפנטניל, מדטומידין' : 'Pharmaceutical-Based Agents: Fentanyl, Carfentanil, Medetomidine'}
+                    {h ? 'חומרים מבוססי תרופות: פנטניל, קרפנטניל, מדטומידין' : 'Pharmaceutical-Based Agents: Fentanyl, Carfentanil, Medetomidine'}
                   </div>
                 </div>
               </div>
@@ -46,7 +46,7 @@ export default function EmergencyCard() {
                 <div className="flex items-center gap-2 mb-2">
                   <Eye size={13} className="text-amber-400" />
                   <span className="text-amber-400 text-[10px] font-black tracking-wider uppercase">
-                    {h ? 'הבדלה \u2014 אירוע חמ"ת מול גז עצבים (סארין/VX)' : 'DIFFERENTIATE \u2014 PBA Event vs Nerve Agent (Sarin/VX)'}
+                    {h ? 'הבדלה \u2014 אירוע חומרים מבוססי תרופות מול גז עצבים (סארין/VX)' : 'DIFFERENTIATE \u2014 PBA Event vs Nerve Agent (Sarin/VX)'}
                   </span>
                 </div>
                 <div className="overflow-x-auto">
@@ -54,7 +54,7 @@ export default function EmergencyCard() {
                     <thead>
                       <tr className="border-b border-gray-700/40">
                         <th className="text-gray-500 text-start py-1.5 w-[28%]">{h ? 'סימן' : 'Sign'}</th>
-                        <th className="text-start py-1.5 text-red-400 w-[36%]">{h ? 'חמ"ת' : 'PBA'} \u2014 {h ? 'יבש ושקט' : 'Dry & Quiet'}</th>
+                        <th className="text-start py-1.5 text-red-400 w-[36%]">{h ? 'חומרים מבוססי תרופות' : 'PBA'} \u2014 {h ? 'יבש ושקט' : 'Dry & Quiet'}</th>
                         <th className="text-start py-1.5 text-orange-400 w-[36%]">{h ? 'גז עצבים \u2014 רטוב' : 'Nerve Agent \u2014 Wet'}</th>
                       </tr>
                     </thead>
@@ -101,7 +101,7 @@ export default function EmergencyCard() {
               <div className="bg-amber-500/8 border border-amber-500/20 rounded-lg px-3 py-2">
                 <span className="text-[10px] text-amber-300 font-bold leading-relaxed">
                   {h
-                    ? 'כלל אצבע: נפגע שוכב שקט, יבש, לא נושם כראוי = חשד חמ"ת. נפגע רטוב, מזיע, עם עוויתות = חשד גז עצבים.'
+                    ? 'כלל אצבע: נפגע שוכב שקט, יבש, לא נושם כראוי = חשד חומרים מבוססי תרופות. נפגע רטוב, מזיע, עם עוויתות = חשד גז עצבים.'
                     : 'Rule of thumb: Casualty lying quiet, dry, poor breathing = suspect PBA. Casualty wet, sweating, twitching = suspect nerve agent.'}
                 </span>
               </div>
@@ -111,7 +111,7 @@ export default function EmergencyCard() {
                 <div className="flex items-center gap-2 mb-2">
                   <Shield size={13} className="text-red-400" />
                   <span className="text-red-400 text-[10px] font-black tracking-wider uppercase">
-                    {h ? 'פעולות מיידיות \u2014 אירוע חמ"ת' : 'IMMEDIATE ACTIONS \u2014 PBA EVENT'}
+                    {h ? 'פעולות מיידיות \u2014 אירוע חומרים מבוססי תרופות' : 'IMMEDIATE ACTIONS \u2014 PBA EVENT'}
                   </span>
                 </div>
                 <div className="space-y-1.5">
@@ -119,7 +119,7 @@ export default function EmergencyCard() {
                     { n: '1', t: 'הגנה \u2014 מנ"פ (מערכת נשימה פתוחה). אין כניסה ללא מיגון!', c: '#ef4444' },
                     { n: '2', t: 'בידוד ראשוני \u2014 במבנה: 100 מטר. בשטח פתוח: 200 מטר נגד כיוון הרוח', c: '#f59e0b' },
                     { n: '3', t: 'נלוקסון \u2014 2 מ"ג IM (תוך-שרירי) או IN (תוך-אפי) לכל נפגע ללא הכרה. חזור כל 2-3 דקות אם אין תגובה', c: '#22c55e' },
-                    { n: '4', t: 'דווח \u2014 "אירוע חשוד חמ\u05F4ת" + מספר נפגעים + כיוון רוח + תיאור סימנים (יבש/שקט)', c: '#3b82f6' },
+                    { n: '4', t: 'דווח \u2014 "אירוע חשוד חומרים מבוססי תרופות" + מספר נפגעים + כיוון רוח + תיאור סימנים (יבש/שקט)', c: '#3b82f6' },
                   ] : [
                     { n: '1', t: 'Protection \u2014 full SCBA. Do not enter without PPE!', c: '#ef4444' },
                     { n: '2', t: 'Initial isolation \u2014 enclosed: 100m. Open area: 200m upwind', c: '#f59e0b' },
