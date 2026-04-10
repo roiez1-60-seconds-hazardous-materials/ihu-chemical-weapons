@@ -305,7 +305,7 @@ export default function EmergencyCard() {
 
               {/* FOOTER */}
               <div className="flex items-center justify-between pt-1">
-                <span className="text-[8px] text-gray-600 font-mono">60 {h ? 'שניות של חומ"ס' : 'Seconds HazMat'} | {h ? 'רועי צוקרמן' : 'Roei Zukerman'}</span>
+                <span className="text-[8px] text-gray-600 font-mono">60 {h ? 'שניות של חומ"ס' : 'Seconds HazMat'} | {h ? 'רועי צוקרמן' : 'Roie Zukerman'}</span>
                 <span className="text-[9px] text-gray-600 font-mono">{h ? '\u2190 לחצו להפוך' : '\u2190 Click to flip'}</span>
               </div>
             </div>

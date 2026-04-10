@@ -16,7 +16,7 @@ export default function Footer() {
 
       {/* Author */}
       <p className="text-sm mb-3" style={{ color: 'rgba(255,255,255,0.7)' }}>
-        <b style={{ color: '#ffffff' }}>{he ? 'רועי צוקרמן' : 'Roei Zukerman'}</b>
+        <b style={{ color: '#ffffff' }}>{he ? 'רועי צוקרמן' : 'Roie Zukerman'}</b>
         {' — '}{he ? 'מומחה לחומ״ס וטב״ק' : 'HazMat & CBRN Expert'}
       </p>
 
@@ -46,7 +46,7 @@ export default function Footer() {
       {/* Copyright box */}
       <div className="mx-auto rounded-lg p-3" style={{ maxWidth: 350, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
         <p className="text-xs font-bold mb-1" style={{ color: '#c8a44e', fontSize: 10 }}>
-          © 2026 {he ? 'רועי צוקרמן — מומחה לחומ״ס וטב״ק' : 'Roei Zukerman — HazMat & CBRN Expert'}
+          © 2026 {he ? 'רועי צוקרמן — מומחה לחומ״ס וטב״ק' : 'Roie Zukerman — HazMat & CBRN Expert'}
         </p>
         <p style={{ fontSize: 8, color: 'rgba(255,255,255,0.3)', lineHeight: 1.5 }}>
           {he 
