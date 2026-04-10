@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 
 type Lang = 'he' | 'en';
 
@@ -59,7 +59,25 @@ const LangContext = createContext<LangCtx>({
 });
 
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>('he');
+  const [lang, setLang] = useState<Lang>(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search).get('lang');
+      if (p === 'en' || p === 'he') return p;
+    }
+    return 'he';
+  });
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+    const handler = (e: MessageEvent) => {
+      if (e.data?.type === 'setLang' && (e.data.lang === 'he' || e.data.lang === 'en')) {
+        setLang(e.data.lang);
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [lang]);
 
   const toggle = useCallback(() => {
     setLang(prev => {
